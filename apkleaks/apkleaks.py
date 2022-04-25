@@ -28,7 +28,7 @@ class APKLeaks:
 		self.json = args.json
 		self.disarg = args.args
 		self.prefix = "apkleaks-"
-		self.tempdir = tempfile.mkdtemp(prefix=self.prefix)
+		self.tempdir = "/home/gehriben/Documents/VT 1/APKs/_DECOMPILED/"+self.prefix
 		self.main_dir = os.path.dirname(os.path.realpath(__file__))
 		self.output = tempfile.mkstemp(suffix=".%s" % ("json" if self.json else "txt"), prefix=self.prefix)[1] if args.output is None else args.output
 		self.fileout = open(self.output, "%s" % ("w" if self.json else "a"))
@@ -36,6 +36,7 @@ class APKLeaks:
 		self.jadx = find_executable("jadx") if find_executable("jadx") is not None else os.path.join(str(Path(self.main_dir).parent), "jadx", "bin", "jadx%s" % (".bat" if os.name == "nt" else "")).replace("\\","/")
 		self.out_json = {}
 		self.scanned = False
+		self.scanned_for_aes = False
 		logging.config.dictConfig({"version": 1, "disable_existing_loggers": True})
 
 	def apk_info(self):
@@ -87,14 +88,17 @@ class APKLeaks:
 			sys.exit(util.writeln("It's not a valid file!", col.WARNING))
 
 	def decompile(self):
+		# Dekompiliert die apk mit jadx und speichert das File im /tmp/apkleaks-[APK Name] Ordner
 		util.writeln("** Decompiling APK...", col.OKBLUE)
 		args = [self.jadx, self.file, "-d", self.tempdir]
+
 		try:
 			args.extend(re.split(r"\s|=", self.disarg))
 		except Exception:
 			pass
 		comm = "%s" % (" ".join(quote(arg) for arg in args))
 		comm = comm.replace("\'","\"")
+		# comm = jadx [APK Name].apk -d /tmp/apkleaks-[APK Name]
 		os.system(comm)
 
 	def extract(self, name, matches):
@@ -114,32 +118,58 @@ class APKLeaks:
 			self.out_json["results"].append({"name": name, "matches": matches})
 			self.scanned = True
 
+	def extract_aes_key(self, results):
+		if len(results):
+			stdout = ("[%s]" % ("AES Key"))
+			util.writeln("\n" + stdout, col.OKGREEN)
+			self.fileout.write("%s" % (stdout + "\n" if self.json is False else ""))
+			for key in results:
+				stdout = ("- %s" % (key))
+				print(stdout)
+				self.fileout.write("%s" % (stdout + "\n" if self.json is False else ""))
+			self.fileout.write("%s" % ("\n" if self.json is False else ""))
+			self.scanned_for_aes = True
+
 	def scanning(self):
 		if self.apk is None:
 			sys.exit(util.writeln("** Undefined package. Exit!", col.FAIL))
 		util.writeln("\n** Scanning against '%s'" % (self.apk.package), col.OKBLUE)
 		self.out_json["package"] = self.apk.package
 		self.out_json["results"] = []
+
+		# Öffnet das File mit allen Patterns (regexes.json)
 		with open(self.pattern) as regexes:
 			regex = json.load(regexes)
 			for name, pattern in regex.items():
-				if isinstance(pattern, list):
-					for p in pattern:
+				# print(pattern)
+				# Prüft ob das Pattern eine Liste ist oder nicht und verarbeitet es entsprechend
+				if name != "LinkFinder": # Removes Link Detection (added by me)
+					if isinstance(pattern, list):
+						# Ist Liste
+						for p in pattern:
+							try:
+								thread = threading.Thread(target = self.extract, args = (name, util.finder(p, self.tempdir, self.fileout)))
+								thread.start()
+							except KeyboardInterrupt:
+								sys.exit(util.writeln("\n** Interrupted. Aborting...", col.FAIL))
+					else:
+						#Ist keine Liste
 						try:
-							thread = threading.Thread(target = self.extract, args = (name, util.finder(p, self.tempdir)))
+							thread = threading.Thread(target = self.extract, args = (name, util.finder(pattern, self.tempdir, self.fileout)))
 							thread.start()
 						except KeyboardInterrupt:
 							sys.exit(util.writeln("\n** Interrupted. Aborting...", col.FAIL))
-				else:
-					try:
-						thread = threading.Thread(target = self.extract, args = (name, util.finder(pattern, self.tempdir)))
-						thread.start()
-					except KeyboardInterrupt:
-						sys.exit(util.writeln("\n** Interrupted. Aborting...", col.FAIL))
+
+		#Try to extract aes key with entropy based searcher
+		try:
+			thread = threading.Thread(target = self.extract_aes_key, args = (util.get_aes_key(self.tempdir),))
+			thread.start()
+		except KeyboardInterrupt:
+			sys.exit(util.writeln("\n** Interrupted. Aborting...", col.FAIL))
 
 	def cleanup(self):
 		shutil.rmtree(self.tempdir)
-		if self.scanned:
+		if self.scanned and self.scanned_for_aes:
 			self.fileout.write("%s" % (json.dumps(self.out_json, indent=4) if self.json else ""))
 			self.fileout.close()
 			print("%s\n** Results saved into '%s%s%s%s'%s." % (col.HEADER, col.ENDC, col.OKGREEN, self.output, col.HEADER, col.ENDC))
