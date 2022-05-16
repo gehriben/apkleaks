@@ -4,12 +4,34 @@ import re
 import sys
 import math
 import traceback
-import time
-import base64
 import math
-from apkleaks.colors import color as col
+import base64
 
-SECRET_KEY_LENGTH = [128, 256, 512]
+from pyrsistent import field
+
+from apkleaks.colors import color as col
+from apkleaks.library_extraction import LibraryExtraction
+
+ALLOWED_FILE_EXTENSIONS = [
+	'.java',
+	'.xml'
+]
+
+SPECIAL_FILE_EXTENSIONS = [
+	'.so'
+]
+
+BLOCKED_PATTERNS = [
+	'DEFCON_CTF_Flag',
+	'HackerOne_CTF_Flag',
+	'HackTheBox_CTF_Flag',
+	'JSON_Web_Token',
+	'Authorization_Basic'
+]
+
+EXCLUDED_FILES = [
+	'AndroidManifest.xml'
+]
 
 class util:
 	@staticmethod
@@ -22,126 +44,132 @@ class util:
 
 	@staticmethod
 	# Prüft ob ein Regex Pattern mit dem Source Code match und so ein Secret offenbart
-	def finder(pattern, path, fileout):
+	def finder(patternname, pattern, path, fileout, verbose):
 		found = []
-		count = 0
 		for fp, _, files in os.walk(path):
 			for fn in files:
 				filepath = os.path.join(fp, fn)
-				with open(filepath, errors='ignore') as handle:
-					try:
-						for line in handle.readlines():
-							util.matcher(pattern, line, found, fp, fn, fileout)
-					except Exception:
-						print(traceback.format_exc())
+				is_valid_file, filepath = util.check_file(filepath, patternname)
+				if is_valid_file:
+					with open(filepath, errors='ignore') as handle:
+						try:
+							for line in handle.readlines():
+								util.matcher(pattern, line, found, fp, fn, fileout, verbose)
+						except Exception:
+							print(traceback.format_exc())
 
 		return sorted(list(set(found)))
 	
 	@staticmethod
-	def matcher(pattern, line, found, fp, fn, fileout):
+	def matcher(pattern, line, found, fp, fn, fileout, verbose):
 		matcher = re.compile(pattern)
 		mo = matcher.search(line)
 		if mo:
-			# fileout.write("%s/%s" % (fp, fn + "\n"))
+			if verbose:
+				fileout.write("%s/%s" % (fp, fn + "\n"))
 			found.append(mo.group())
 
 	@staticmethod
-	def get_aes_key(path):
-		found_aes_keys = list()
-		for fp, _, files in os.walk(path):
-			for fn in files:
-				filepath = os.path.join(fp, fn)
-				with open(filepath, errors='ignore') as handle:
-					try:
-						for line in handle.readlines():
-							#if fn == "MainActivity.java":
-							entropy = util.calculate_shannon_entropy(line)
-							aes_key = util.contains_aes_key(line, entropy, fp+'/'+fn)
-							if aes_key != False and aes_key not in found_aes_keys:
-								found_aes_keys.append(aes_key)
-					except Exception:
-						print(traceback.format_exc())
-
-		print(found_aes_keys)
-		return found_aes_keys
-
-	@staticmethod
-	def contains_aes_key(line, entropy, path):
-		if entropy > 5.0 and entropy/len(line) > 0.04:
-			for key_length in SECRET_KEY_LENGTH:
-				base64_key_length = 4*math.ceil(((key_length/8)/3))
-				if base64_key_length%4==3:
-					base64_key_length+=1
-				elif base64_key_length%4==2:
-					base64_key_length+=2
-				elif base64_key_length%4==1:
-					base64_key_length+=3
-				
-				# sequenz_entropy_dict = util.sliding_window(base64_key_length, line)
-				sequenz_entropy_dict = util.quotes_indicator(base64_key_length, line)
-
-				highest_entropy_value = 0.0
-				highest_entropy_key = ""
-
-				for key, value in sequenz_entropy_dict.items():
-					if value > highest_entropy_value:
-						highest_entropy_value = value
-						highest_entropy_key = key
-
-				if highest_entropy_value > 4.8: 
-					"""print("==> AES KEY FOUND: "+str(highest_entropy_key)+" WITH "+str(highest_entropy_value)+" ENTROPY AND LENGTH OF "+str(key_length)+" Bits!")
-					print("    --> Found in line: "+line)
-					print("    --> Found in document: "+path)"""
-					return highest_entropy_key
-
-		return False	
-	
-	@staticmethod
-	def sliding_window(base64_key_length, line):
+	def sliding_window(secquence_length, line):
 		sequenz_entropy_dict = dict()
 		for i in range(len(line)):
-			if i+base64_key_length < len(line):
-				line_sequence = line[i:i+base64_key_length]
-				# print(str(i) + ": " + str(line_sequence))
+			if i+secquence_length < len(line):
+				line_sequence = line[i:i+secquence_length]
+				processed_line_sequence = line_sequence
+				#Checks if sequence is base64 encoded
 				try:
 					line_bytes = bytes(line_sequence, 'utf-8')
-					# print("  --> Bytes: " + str(line_bytes))
-					base64_decoded = base64.decodebytes(line_bytes)
-					# print("  --> Base64 Decoded: " + str(base64_decoded))
-					# print("  --> Length of Base64 Decoded: " + str(len(base64_decoded)))
-					entropy_base64_decoded = util.calculate_shannon_entropy(base64_decoded)
-					# print("  --> Base64 Decoded Entropy: " + str(entropy_base64_decoded))
-					sequenz_entropy_dict[line_sequence] = entropy_base64_decoded
+					processed_line_sequence = base64.decodebytes(line_bytes)
+				# Throws an exception if sequence is not in base64 format. The exception will be ignored.
 				except:
-					# traceback.print_exc()
 					pass
-		
+				# Continue with normal procedure if not
+				finally:
+					entropy_line_sequence = util.calculate_shannon_entropy(processed_line_sequence)
+					sequenz_entropy_dict[line_sequence] = entropy_line_sequence
+
+
 		return sequenz_entropy_dict
 	
 	@staticmethod
-	def quotes_indicator(base64_key_length, line):
+	def quotes_indicator(line, base64_key_length=0, no_key_length=False):
 		sequenz_entropy_dict = dict()
 		for i in range(len(line)):
 				line_quote_sequence = line[i:i+1]
 				if line_quote_sequence == "\"":
-					# print(line[i+base64_key_length+1:i+base64_key_length+2])
-					if i+base64_key_length+1 < len(line) and line[i+base64_key_length+1:i+base64_key_length+2] == "\"":
-						line_sequence = line[i+1:i+base64_key_length+1]
-						# print(str(i) + ": " + str(line_sequence))
+					if no_key_length == True or i+base64_key_length+1 < len(line) and line[i+base64_key_length+1:i+base64_key_length+2] == "\"":
+						
+						begin_line_sequence = i+1
+						end_line_sequence = begin_line_sequence
+
+						if no_key_length == True:
+							for x in range(i+1, (i+1)+len(line[i+1:])):
+								if line[x:x+1] == "\"":
+									end_line_sequence = x
+
+									break
+						else:
+							end_line_sequence = i+base64_key_length+1
+					
+
+						line_sequence = line[begin_line_sequence:end_line_sequence]
+						processed_line_sequence = line_sequence
+						#Checks if sequence is base64 encoded
 						try:
 							line_bytes = bytes(line_sequence, 'utf-8')
-							# print("  --> Bytes: " + str(line_bytes))
-							base64_decoded = base64.decodebytes(line_bytes)
-							# print("  --> Base64 Decoded: " + str(base64_decoded))
-							# print("  --> Length of Base64 Decoded: " + str(len(base64_decoded)))
-							entropy_base64_decoded = util.calculate_shannon_entropy(base64_decoded)
-							# print("  --> Base64 Decoded Entropy: " + str(entropy_base64_decoded))
-							sequenz_entropy_dict[line_sequence] = entropy_base64_decoded
+							processed_line_sequence = base64.decodebytes(line_bytes)
+						# Throws an exception if sequence is not in base64 format. The exception will be ignored.
 						except:
-							# traceback.print_exc()
 							pass
+						# Continue with normal procedure if not
+						finally:
+							entropy_line_sequence = util.calculate_shannon_entropy(processed_line_sequence)
+							sequenz_entropy_dict[line_sequence] = entropy_line_sequence
 		
 		return sequenz_entropy_dict	
+
+	@staticmethod
+	def check_file(filepath, patternname):
+		if util.is_file_excluded(filepath):
+			return False, filepath
+		
+		if util.is_file_special(filepath, patternname):
+			library_extraction = LibraryExtraction()
+			filepath = library_extraction.start_decompiling(filepath)
+			return True, filepath
+
+		if not util.is_file_extension_allowed(filepath):
+			return False, filepath
+
+		return True, filepath
+
+	@staticmethod
+	def is_file_excluded(filepath):
+		for excluded_file in EXCLUDED_FILES:
+			if excluded_file in filepath:
+				return True
+		
+		return False
+
+	@staticmethod
+	def is_file_extension_allowed(filepath):
+		for allowed_file_extension in ALLOWED_FILE_EXTENSIONS:
+			if filepath.endswith(allowed_file_extension):
+				return True
+
+		return False
+	
+	def is_file_special(filepath, patternname):
+		for special_file_extension in SPECIAL_FILE_EXTENSIONS:
+			if filepath.endswith(special_file_extension):
+				for blocked_pattern in BLOCKED_PATTERNS:
+					if patternname == blocked_pattern:
+						return False
+				
+				return True
+		
+		return False
+
 
 	@staticmethod
 	def calculate_shannon_entropy(string):

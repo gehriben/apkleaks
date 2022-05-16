@@ -11,7 +11,7 @@
             "program": "apkleaks.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["-f","zalando.apk"]
+            "args": ["-f","../APKs/Encrypter.apk"]
         },
     ]
 }
