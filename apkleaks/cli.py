@@ -31,10 +31,9 @@ def argument():
 def main():
 	header()
 	args = argument()
-	init = APKLeaks(args)
+	apkleaks = APKLeaks(args)
 	try:
-		init.integrity()
-		init.decompile()
-		init.scanning()
+		apkleaks.initialization()
+		apkleaks.scanning()
 	finally:
-		init.cleanup()
+		apkleaks.cleanup()

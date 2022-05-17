@@ -43,33 +43,6 @@ class util:
 		util.write(message + "\n", color)
 
 	@staticmethod
-	# Prüft ob ein Regex Pattern mit dem Source Code match und so ein Secret offenbart
-	def finder(patternname, pattern, path, fileout, verbose):
-		found = []
-		for fp, _, files in os.walk(path):
-			for fn in files:
-				filepath = os.path.join(fp, fn)
-				is_valid_file, filepath = util.check_file(filepath, patternname)
-				if is_valid_file:
-					with open(filepath, errors='ignore') as handle:
-						try:
-							for line in handle.readlines():
-								util.matcher(pattern, line, found, fp, fn, fileout, verbose)
-						except Exception:
-							print(traceback.format_exc())
-
-		return sorted(list(set(found)))
-	
-	@staticmethod
-	def matcher(pattern, line, found, fp, fn, fileout, verbose):
-		matcher = re.compile(pattern)
-		mo = matcher.search(line)
-		if mo:
-			if verbose:
-				fileout.write("%s/%s" % (fp, fn + "\n"))
-			found.append(mo.group())
-
-	@staticmethod
 	def sliding_window(secquence_length, line):
 		sequenz_entropy_dict = dict()
 		for i in range(len(line)):
