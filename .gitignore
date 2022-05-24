@@ -3,3 +3,9 @@ jadx/
 *.egg-info/
 build/
 dist/
+*.env
+logs/
+local/
+env/
+venv/
+apks/
