@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  mongo:
+    container_name: mongodb
+    image: mongo
+    ports:
+      - ${MONGODB_PORT:-27017}:27017
+    env_file:
+      - mongo.env
+    volumes:
+      - ${MONGODB_DATA_DIR:-/mnt/data/mongodb}:/data/db
+    restart: always
+    networks:
+      - apk-scanner-net
+
+  apkscanner-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID}
+        USER_NAME: ${USER_NAME}
+        GROUP_ID: ${GROUP_ID}
+        GROUP_NAME: ${GROUP_NAME}
+    image: apkscanner-base
+    container_name: apk-scanner
+    volumes:
+      - ${BASE_PATH:-/home/ubuntu/services/apk-scanner}:/app:ro
+      - ${BASE_PATH:-/home/ubuntu/services/apk-scanner}/logs/:/log
+      - ${BASE_PATH:-/home/ubuntu/services/apk-scanner}/apks/:/apks
+    environment:
+      - HDV_LOGGING_SILENT
+      - HDV_LOGGING_DEBUG
+    networks:
+      - apk-scanner-net
+    depends_on:
+      - mongo
+
+networks:
+  apk-scanner-net:
+    external: true

@@ -1,0 +1,14 @@
+paths:
+  logs: /log
+
+db:
+  name: apk_scanner
+  username: root
+  password: do_not_commit_secrets
+  host: mongodb
+  port: 27017
+
+logging:
+  debug: true
+  silent: false
+

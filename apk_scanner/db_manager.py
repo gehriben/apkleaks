@@ -2,7 +2,7 @@ from pymongo import MongoClient
 
 class MongoDB(object):
     def __init__(self):
-        self.client = MongoClient("localhost", 27017, username="root",
+        self.client = MongoClient("mongodb", 27017, username="root",
                              password="rootpassword")
         self.db = self.client["apk_scanner"]
 

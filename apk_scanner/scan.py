@@ -6,12 +6,12 @@ from apkleaks.apkleaks import APKLeaks
 from apk_scanner.file_reader import File_Reader
 from apk_scanner.db_manager import MongoDB
 
-APK_PATH = '../../APKs'
-APKLEAKS_RESULTS_PATH = '../../APKLeaks Results'
-APKLEAKS_VERBOSE_PATH = '../../Sources/_APKs'
+APK_PATH = 'apks'
+APKLEAKS_RESULTS_PATH = 'apks/APKLeaks_Results'
+APKLEAKS_VERBOSE_PATH = 'apks/Sources/_APKs'
 
 MAX_ITERATIONS = 0
-VERBOSE = True
+VERBOSE = False
 
 class Scan():
     def __init__(self):
@@ -44,10 +44,10 @@ class Scan():
         result_path = APKLEAKS_RESULTS_PATH + '/' + apkname + '/' + apkname + '.txt'
         verbose_path = APKLEAKS_VERBOSE_PATH + '/' + apkname
         
-        if os.path.exists(APKLEAKS_RESULTS_PATH + '/' + apkname) == False:
+        """if os.path.exists(APKLEAKS_RESULTS_PATH + '/' + apkname) == False:
             os.mkdir(APKLEAKS_RESULTS_PATH + '/' + apkname)
         if os.path.exists(verbose_path) == False and VERBOSE == True:
-            os.mkdir(verbose_path)
+            os.mkdir(verbose_path)"""
 
         return apk_path, result_path, verbose_path
 
@@ -61,7 +61,7 @@ class Scan():
         parser = argparse.ArgumentParser()
         args = parser.parse_args()
         args.file = filepath
-        args.output = outputpath
+        args.output = outputpath if VERBOSE else None
         args.pattern = None
         args.args = None
         args.verbose = verbosepath if VERBOSE else None

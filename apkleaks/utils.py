@@ -7,8 +7,6 @@ import traceback
 import math
 import base64
 
-from pyrsistent import field
-
 from apkleaks.colors import color as col
 from apkleaks.filter.library_extraction import LibraryExtraction
 
