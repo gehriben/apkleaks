@@ -24,6 +24,8 @@ from apkleaks.decompiler import Decompiler
 from apkleaks.file_filtering import FileFiltering
 from apkleaks.heuristics.heuristics import Heuristics
 from apkleaks.scoring.scoring import Scoring
+from apkleaks.scoring.secret_fiter import SecretFilter
+from apkleaks.scoring.secret_fiter import RESTRICTIONS
 from apkleaks.key_extractor import KeyExtractor
 from apkleaks.credentials_extractor import CredentialsExtractor
 from apkleaks.patterns.custom_pattern import CustomPattern
@@ -51,6 +53,7 @@ class APKLeaks:
 		self._pattern_matcher = PatternMatcher()
 		self._heuristics = Heuristics()
 		self._scoring = Scoring()
+		self._secret_filter = SecretFilter()
 
 		logging.config.dictConfig({"version": 1, "disable_existing_loggers": True})
 
@@ -132,6 +135,7 @@ class APKLeaks:
 		self._pattern_matcher.search_pattern_matches(pattern, self.tempdir)
 		self._heuristics.apply_heuristics(pattern)
 		self._scoring.do_scoring(pattern)
+		self._secret_filter.filter_secrets(RESTRICTIONS.MEDIUM, pattern)
 		self.output_results(pattern)
 		# print(f"--- {pattern.name} ---")
 		# print(pattern.results)
