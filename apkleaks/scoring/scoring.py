@@ -12,7 +12,8 @@ class Scoring():
                 elif heuristic_name == 'keywords' and 'keyword_searcher' in pattern.results:
                     self.__score_keyword_search(pattern)
         
-        self.__calculate_total_score(pattern)
+        if not pattern.is_empty():
+            self.__calculate_total_score(pattern)
 
     def __score_entropy(self, pattern):
         self.total_possible_score += pattern.entropy_score
@@ -43,7 +44,7 @@ class Scoring():
     def __calculate_total_score(self, pattern):
         total_score = 0
         for secret in pattern.results['pattern_matcher']:
-            for heuristic_name, heuristic_content in pattern.results:
+            for heuristic_name, heuristic_content in pattern.results.items():
                 for result in heuristic_content:
                     if secret['secret'] == result['secret'] and 'score' in result:
                         total_score += result['score']

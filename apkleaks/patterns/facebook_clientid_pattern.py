@@ -12,8 +12,8 @@ IMPORT_REGEXES = [".*[f|F][a|A][c|C][e|E][b|B][o|O][o|O][k|K].*"]
 KEYWORD_REGEXES = ["[<]?.*[i|I][d|D].*[=|>].*", "[<]?.*[f|F][a|A][c|C][e|E][b|B][o|O][o|O][k|K].*[=|>].*"]
 
 ENTROPY_SCORE = 10
-IMPORT_SCORE = 5
-KEYWORD_SCORE = 5
+IMPORT_SCORE = 10
+KEYWORD_SCORE = 10
 
 class FacebookClientidPattern(Pattern):
     def __init__(self):

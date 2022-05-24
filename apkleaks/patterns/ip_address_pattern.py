@@ -17,7 +17,6 @@ class IpAddressPattern(Pattern):
         self.name = NAME
         self.regexes = REGEXES
 
-        self.entropy_threshold = ENTROPY_THRESHOLD
         self.keyword_regexes = KEYWORD_REGEXES
 
         self.entropy_score = ENTROPY_SCORE

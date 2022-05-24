@@ -141,19 +141,22 @@ class APKLeaks:
 		# print(pattern.results)
 
 	def output_results(self, pattern):
-		stdout = ("[%s]" % (pattern.name))
-		util.writeln("\n" + stdout, col.OKGREEN)
-		self.fileout.write("%s" % (stdout + "\n" if self.json is False else ""))
-		for valid_secrets in pattern.results['valid_secrets']:
-			stdout = ("- %s (score: %s)" % (valid_secrets['secret'], valid_secrets['score']))
-			print(stdout)
-			self.fileout.write("%s" % (stdout + "\n" if self.json is False else ""))
-		self.fileout.write("%s" % ("\n" if self.json is False else ""))
-
 		if not pattern.is_empty():
-			self.out_json["results"].append(pattern.json())	
+			stdout = ("[%s]" % (pattern.name))
+			util.writeln("\n" + stdout, col.OKGREEN)
+			self.fileout.write("%s" % (stdout + "\n" if self.json is False else ""))
+			for valid_secrets in pattern.results['valid_secrets']:
+				stdout = ("- %s (score: %s)" % (valid_secrets['secret'], valid_secrets['score']))
+				print(stdout)
+				self.fileout.write("%s" % (stdout + "\n" if self.json is False else ""))
+			self.fileout.write("%s" % ("\n" if self.json is False else ""))
 
-		print(self.out_json)
+			self.out_json["results"].append(pattern.json())	
+			"""print("")
+			stdout = ("[%s]" % ('JSON_Printout'))
+			util.writeln("\n" + stdout, col.OKGREEN)
+			print(stdout)
+			print(self.out_json)"""
 
 
 	def extract_aes_key(self, results):

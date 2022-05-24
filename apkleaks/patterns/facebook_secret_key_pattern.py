@@ -12,8 +12,8 @@ IMPORT_REGEXES = [".*[f|F][a|A][c|C][e|E][b|B][o|O][o|O][k|K].*"]
 KEYWORD_REGEXES = ["[<]?.*[a|A][p|P][i|I].*[=|>].*", "[<]?.*[f|F][a|A][c|C][e|E][b|B][o|O][o|O][k|K].*[=|>].*", "[<]?.*[k|K][e|E][y|Y].*[=|>].*"]
 
 ENTROPY_SCORE = 10
-IMPORT_SCORE = 5
-KEYWORD_SCORE = 5
+IMPORT_SCORE = 10
+KEYWORD_SCORE = 10
 
 class FacebookSecretKeyPattern(Pattern):
     def __init__(self):
