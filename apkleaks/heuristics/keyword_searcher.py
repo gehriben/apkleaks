@@ -1,4 +1,5 @@
 import traceback
+import re
 
 AES_KEYWORDS = [
     'AES',
@@ -20,39 +21,29 @@ CREDENTIALS_KEYWORDS = [
 ]
 
 class KeywordSearcher():
-    def __init__(self):
-        pass
+    def __init__(self, filepaths, keyword_patterns):
+        self.filepaths = filepaths
+        self.keyword_patterns = keyword_patterns
 
-    def search_aes_keywords(self, filepath):
-        if len(self.search_keywords_in_file(filepath, AES_KEYWORDS)) != 0:
-            return True
-        else:
-            return False
-    
-    def search_credentials_keywords(self, line):
-        return self.search_keywords_in_line(line, CREDENTIALS_KEYWORDS)
-
-    def search_keywords_in_file(self, filepath, keywords):
-        found_keywords = list()
-        
-        with open(filepath, errors='ignore') as handle:
-            try:
-                for line in handle.readlines():
-                    for keyword in keywords:
-                        if keyword.lower() in line.lower():
-                            found_keywords.append(keyword.lower())
-            except Exception:
-                print(traceback.format_exc())
-        
-
-        return found_keywords
-
-    def search_keywords_in_line(self, line, keywords):
-        found_keywords = list()
-        
-        for keyword in keywords:
-            if keyword.lower() in line.lower():
-                found_keywords.append(keyword.lower())
+    def search_keywords(self) -> dict():
+        found_keywords = dict()
+        try:
+            for filepath in self.filepaths:
+                with open(filepath, errors='ignore') as handle:
+                    for line in handle.readlines():
+                        for regex in self.keyword_patterns:
+                            matcher = re.compile(regex)
+                            result = matcher.search(line)
+                            if result:
+                                if filepath not in found_keywords:
+                                    found_keywords[filepath] = dict()
+                                
+                                if regex not in found_keywords[filepath]:
+                                    found_keywords[filepath][regex] = [line,]
+                                else:
+                                    found_keywords[filepath][regex].append(line) 
+        except Exception:
+            print(traceback.format_exc())
 
         return found_keywords
 

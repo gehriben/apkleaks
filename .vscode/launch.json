@@ -5,13 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "apkleaks",
             "type": "python",
             "request": "launch",
             "program": "apkleaks.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["-f","../APKs/Encrypter.apk"]
+            "args": ["-f","../../APKs/Encrypter.apk"]
         },
     ]
 }

@@ -4,8 +4,8 @@ import os
 import math
 
 from apkleaks.utils import util
-from apkleaks.import_extractor import ImportExtractor
-from apkleaks.keyword_searcher import KeywordSearcher
+from apkleaks.heuristics.import_extractor import ImportExtractor
+from apkleaks.heuristics.keyword_searcher import KeywordSearcher
 from apkleaks.score import Score
 from apkleaks.score import Scoremargin
 

@@ -72,8 +72,7 @@ class Scan():
         results_json = ''
         
         try:
-            apkleaks.integrity()
-            apkleaks.decompile()
+            apkleaks.initialization()
             apkleaks.scanning()
 
             results_json = apkleaks.out_json

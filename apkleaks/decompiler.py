@@ -11,12 +11,13 @@ from zipfile import ZipFile
 from pyaxmlparser import APK
 
 from apkleaks.colors import color as col
-from utils import util
+from apkleaks.utils import util
 
 JADX_LIBRARY = "https://github.com/skylot/jadx/releases/download/v1.2.0/jadx-1.2.0.zip"
 
 class Decompiler():
     def __init__(self, file, outputdir):
+        self.apk = None
         self.file = file
         self.outputdir = outputdir
         self.main_dir = os.path.dirname(os.path.realpath(__file__))

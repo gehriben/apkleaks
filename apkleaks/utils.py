@@ -10,7 +10,7 @@ import base64
 from pyrsistent import field
 
 from apkleaks.colors import color as col
-from apkleaks.library_extraction import LibraryExtraction
+from apkleaks.filter.library_extraction import LibraryExtraction
 
 ALLOWED_FILE_EXTENSIONS = [
 	'.java',
@@ -142,32 +142,3 @@ class util:
 				return True
 		
 		return False
-
-
-	@staticmethod
-	def calculate_shannon_entropy(string):
-		"""
-		Calculates the Shannonx entropy for the given string.
-
-		:param string: String to parse.
-		:type string: str
-
-		:returns: Shannon entropy (min bits per byte-character).
-		:rtype: float
-		"""
-		ent = 0.0
-		if len(string) < 2:
-			return ent
-		size = float(len(string))
-		freq = dict()
-		for char in string:
-			if char in freq:
-				freq[char] = freq[char] + 1
-			else:
-				freq[char] = 1
-
-		for value in freq.values():		
-			if value > 0:
-				prop = float(value) / size
-				ent = ent + prop * math.log(1/prop, 2)
-		return ent

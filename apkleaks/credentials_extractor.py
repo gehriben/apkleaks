@@ -2,8 +2,8 @@ import traceback
 import os
 
 from apkleaks.utils import util
-from apkleaks.import_extractor import ImportExtractor
-from apkleaks.keyword_searcher import CREDENTIALS_KEYWORDS, KeywordSearcher
+from apkleaks.heuristics.import_extractor import ImportExtractor
+from apkleaks.heuristics.keyword_searcher import CREDENTIALS_KEYWORDS, KeywordSearcher
 from apkleaks.score import Score
 from apkleaks.score import Scoremargin
 
