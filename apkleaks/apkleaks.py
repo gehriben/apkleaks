@@ -15,8 +15,6 @@ from pathlib import Path
 from pipes import quote
 from urllib.request import urlopen
 from apkleaks.pattern_matcher import PatternMatcher
-
-from pyaxmlparser import APK
                                                                                                                                                                                                                                                                                                                
 from apkleaks.colors import color as col
 from apkleaks.utils import util
@@ -31,17 +29,19 @@ from apkleaks.credentials_extractor import CredentialsExtractor
 from apkleaks.patterns.custom_pattern import CustomPattern
 
 class APKLeaks:
-	def __init__(self, args):
-		self.file = os.path.realpath(args.file)
-		self.verbose = args.verbose
-		self.json = args.json
-		self.disarg = args.args
+	def __init__(self, args, file=None, verbose=None, json=None, disarg=None, output=None, pattern=None):
+		self.file = os.path.realpath(args.file) if args else file
+		self.verbose = args.verbose if args else verbose
+		self.json = args.json if args else json
+		self.disarg = args.args if args else disarg
+		self.args_output = args.output if args else output
+		self.args_pattern = args.pattern if args else pattern
 		self.prefix = "apkleaks-"
 		self.tempdir = tempfile.mkdtemp(prefix=self.prefix) if not self.verbose else self.verbose
 		self.main_dir = os.path.dirname(os.path.realpath(__file__))
-		self.output = tempfile.mkstemp(suffix=".%s" % ("json" if self.json else "txt"), prefix=self.prefix)[1] if args.output is None else args.output
+		self.output = tempfile.mkstemp(suffix=".%s" % ("json" if self.json else "txt"), prefix=self.prefix)[1] if self.args_output is None else self.args_output
 		self.fileout = open(self.output, "%s" % ("w" if self.json else "a"))
-		self.pattern = os.path.join(str(Path(self.main_dir).parent), "config", "regexes.json") if args.pattern is None else args.pattern
+		self.pattern = os.path.join(str(Path(self.main_dir).parent), "config", "regexes.json") if self.args_pattern is None else self.args_pattern
 		self.patterns = list()
 		self.out_json = {}
 		self.scanned = False
@@ -52,8 +52,6 @@ class APKLeaks:
 		self._file_filtering = FileFiltering(self.tempdir)
 		self._pattern_matcher = PatternMatcher()
 		self._heuristics = Heuristics()
-		self._scoring = Scoring()
-		self._secret_filter = SecretFilter()
 
 		logging.config.dictConfig({"version": 1, "disable_existing_loggers": True})
 
@@ -134,14 +132,19 @@ class APKLeaks:
 	def extract(self, pattern):
 		self._pattern_matcher.search_pattern_matches(pattern, self.tempdir)
 		self._heuristics.apply_heuristics(pattern)
-		self._scoring.do_scoring(pattern)
-		self._secret_filter.filter_secrets(RESTRICTIONS.MEDIUM, pattern)
+
+		scoring = Scoring()
+		scoring.do_scoring(pattern)
+
+		secret_filter = SecretFilter()
+		secret_filter.filter_secrets(RESTRICTIONS.MEDIUM, pattern)
+		
 		self.output_results(pattern)
 		# print(f"--- {pattern.name} ---")
 		# print(pattern.results)
 
 	def output_results(self, pattern):
-		if not pattern.is_empty():
+		if 'valid_secrets' in pattern.results:
 			stdout = ("[%s]" % (pattern.name))
 			util.writeln("\n" + stdout, col.OKGREEN)
 			self.fileout.write("%s" % (stdout + "\n" if self.json is False else ""))

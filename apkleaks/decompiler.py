@@ -1,4 +1,4 @@
-
+import io
 import os
 import re
 import sys
@@ -7,6 +7,7 @@ from pipes import quote
 from distutils.spawn import find_executable
 from pathlib import Path
 from contextlib import closing
+from urllib.request import urlopen
 from zipfile import ZipFile
 from pyaxmlparser import APK
 

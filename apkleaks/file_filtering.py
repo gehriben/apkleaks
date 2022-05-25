@@ -5,8 +5,7 @@ from apkleaks.colors import color as col
 
 ALLOWED_FILE_EXTENSIONS = [
 	'.java',
-	'.xml',
-    '.dex'
+	'.xml'
 ]
 
 SPECIAL_FILE_EXTENSIONS = [

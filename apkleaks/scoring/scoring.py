@@ -42,8 +42,8 @@ class Scoring():
             keyword_searcher['score'] = score
 
     def __calculate_total_score(self, pattern):
-        total_score = 0
         for secret in pattern.results['pattern_matcher']:
+            total_score = 0
             for heuristic_name, heuristic_content in pattern.results.items():
                 for result in heuristic_content:
                     if secret['secret'] == result['secret'] and 'score' in result:

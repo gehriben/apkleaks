@@ -23,8 +23,10 @@ services:
         USER_NAME: ${USER_NAME}
         GROUP_ID: ${GROUP_ID}
         GROUP_NAME: ${GROUP_NAME}
+        REPO_USER: ${REPO_USER}
+        REPO_PASSWORD: ${REPO_PASSWORD}
     image: apkscanner-base
-    container_name: apk-scanner
+    container_name: apkscanner-cli
     volumes:
       - ${BASE_PATH:-/home/ubuntu/services/apk-scanner}:/app:ro
       - ${BASE_PATH:-/home/ubuntu/services/apk-scanner}/logs/:/log
