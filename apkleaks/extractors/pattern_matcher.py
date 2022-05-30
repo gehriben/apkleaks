@@ -15,7 +15,7 @@ class PatternMatcher():
                 match['secret'] = match['secret'][len("'"):-len("'")]
 
         if matches:
-            pattern.results['pattern_matcher'] = matches
+            pattern.results['possible_secrets'] = matches
 
     # Prüft ob ein Regex Pattern mit dem Source Code match und so ein Secret offenbart
     def file_reader(self, pattern, path) -> list():

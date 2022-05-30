@@ -10,25 +10,14 @@ AES_KEYWORDS = [
     'doFinal'
 ]
 
-CREDENTIALS_KEYWORDS = [
-    'password',
-    'pass',
-    'username',
-    'user',
-    'nickname',
-    'login',
-    'email'
-]
-
 class KeywordSearcher():
-    def __init__(self, filepaths, keyword_patterns):
-        self.filepaths = filepaths
+    def __init__(self, keyword_patterns):
         self.keyword_patterns = keyword_patterns
 
-    def search_keywords(self) -> dict():
+    def search_keywords(self, filepaths) -> dict():
         found_keywords = dict()
         try:
-            for filepath in self.filepaths:
+            for filepath in filepaths:
                 with open(filepath, errors='ignore') as handle:
                     for line in handle.readlines():
                         for regex in self.keyword_patterns:
@@ -46,5 +35,17 @@ class KeywordSearcher():
             print(traceback.format_exc())
 
         return found_keywords
+
+    def search_keywords_in_line(self, line):
+        try:
+            for regex in self.keyword_patterns:
+                matcher = re.compile(regex)
+                result = matcher.search(line)
+                if result:
+                    return line
+        except Exception:
+            print(traceback.format_exc())
+
+        return False
 
         

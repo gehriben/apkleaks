@@ -24,7 +24,7 @@ class Pattern():
 
     def get_all_filepaths(self):
         filepath_set = set()
-        for result in self.results['pattern_matcher']:
+        for result in self.results['possible_secrets']:
             for filepath in result['filepaths']:
                 filepath_set.add(filepath)
         

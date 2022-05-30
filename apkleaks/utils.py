@@ -61,43 +61,6 @@ class util:
 
 
 		return sequenz_entropy_dict
-	
-	@staticmethod
-	def quotes_indicator(line, base64_key_length=0, no_key_length=False):
-		sequenz_entropy_dict = dict()
-		for i in range(len(line)):
-				line_quote_sequence = line[i:i+1]
-				if line_quote_sequence == "\"":
-					if no_key_length == True or i+base64_key_length+1 < len(line) and line[i+base64_key_length+1:i+base64_key_length+2] == "\"":
-						
-						begin_line_sequence = i+1
-						end_line_sequence = begin_line_sequence
-
-						if no_key_length == True:
-							for x in range(i+1, (i+1)+len(line[i+1:])):
-								if line[x:x+1] == "\"":
-									end_line_sequence = x
-
-									break
-						else:
-							end_line_sequence = i+base64_key_length+1
-					
-
-						line_sequence = line[begin_line_sequence:end_line_sequence]
-						processed_line_sequence = line_sequence
-						#Checks if sequence is base64 encoded
-						try:
-							line_bytes = bytes(line_sequence, 'utf-8')
-							processed_line_sequence = base64.decodebytes(line_bytes)
-						# Throws an exception if sequence is not in base64 format. The exception will be ignored.
-						except:
-							pass
-						# Continue with normal procedure if not
-						finally:
-							entropy_line_sequence = util.calculate_shannon_entropy(processed_line_sequence)
-							sequenz_entropy_dict[line_sequence] = entropy_line_sequence
-		
-		return sequenz_entropy_dict	
 
 	@staticmethod
 	def check_file(filepath, patternname):

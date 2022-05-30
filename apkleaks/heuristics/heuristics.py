@@ -8,7 +8,7 @@ class Heuristics():
     
     def apply_heuristics(self, pattern):
         for heuristic_name, heuristic_status in pattern.heuristics_status.items(): 
-            if heuristic_status and 'pattern_matcher' in pattern.results:
+            if heuristic_status and 'possible_secrets' in pattern.results:
                 if heuristic_name == 'entropy':
                     self.__do_entropy_calculation(pattern)
                 elif heuristic_name == 'imports':
@@ -18,9 +18,9 @@ class Heuristics():
 
     def __do_entropy_calculation(self, pattern):
         entropy_results = list()
-        for result in pattern.results['pattern_matcher']:
-            entropy_calculator = EntropyCalculator(result['secret'])
-            entropy = entropy_calculator.calculate_shannon_entropy()
+        for result in pattern.results['possible_secrets']:
+            entropy_calculator = EntropyCalculator()
+            entropy = entropy_calculator.calculate_shannon_entropy(result['secret'])
             entropy_result_json = {
                 'secret':result['secret'],
                 'entropy':entropy
@@ -35,7 +35,7 @@ class Heuristics():
         imports = import_extractor.do_import_extraction()
 
         import_results = list()
-        for result in pattern.results['pattern_matcher']:
+        for result in pattern.results['possible_secrets']:
             import_list= list()
             for filepath in result['filepaths']:
                 if filepath in imports:    
@@ -58,11 +58,11 @@ class Heuristics():
             pattern.results['import_extractor'] = import_results
 
     def __do_keyword_search(self, pattern):
-        keyword_searcher = KeywordSearcher(list(pattern.get_all_filepaths()), pattern.keyword_regexes)
-        keywords = keyword_searcher.search_keywords()
+        keyword_searcher = KeywordSearcher(pattern.keyword_regexes)
+        keywords = keyword_searcher.search_keywords(list(pattern.get_all_filepaths()))
         
         keyword_results = list()
-        for result in pattern.results['pattern_matcher']:
+        for result in pattern.results['possible_secrets']:
             keyword_dict= dict()
             for filepath in result['filepaths']:
                 if filepath in keywords:

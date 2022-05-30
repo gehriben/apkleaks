@@ -52,8 +52,9 @@ class Scan():
         return apk_path, result_path, verbose_path
 
     def init_apkleaks(self, apk_path, result_path, verbose_path):
-        file, output, pattern, disargs, verbose, json = self.build_arguments(apk_path, result_path, verbose_path)
-        apkleaks = APKLeaks(None, file=file, verbose=verbose, json=json, disarg=disargs, output=output, pattern=pattern)
+        file, output, pattern, disargs, verbose, json, pattern_matcher, key_extractor, credentials_extractor = self.build_arguments(apk_path, result_path, verbose_path)
+        apkleaks = APKLeaks(None, file=file, verbose=verbose, json=json, disarg=disargs, output=output, pattern=pattern, 
+        pattern_matcher=pattern_matcher, key_extractor=key_extractor, credentials_extractor=credentials_extractor)
 
         return apkleaks
     
@@ -64,7 +65,10 @@ class Scan():
         disargs = None
         verbose = verbosepath if VERBOSE else None
         json = False
-        return file, output, pattern, disargs, verbose, json
+        pattern_matcher = False
+        key_extractor = False
+        credentials_extractor = True
+        return file, output, pattern, disargs, verbose, json, pattern_matcher, key_extractor, credentials_extractor
 
     def run_apkleaks(self, apkleaks):
         results_json = ''

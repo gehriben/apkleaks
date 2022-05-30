@@ -11,8 +11,8 @@ class SecretFilter():
     
     def filter_secrets(self, filter_mode, pattern):
         valid_secrets = list()
-        if 'pattern_matcher' in pattern.results:
-            for secret in pattern.results['pattern_matcher']:
+        if 'possible_secrets' in pattern.results:
+            for secret in pattern.results['possible_secrets']:
                 if self.__is_found_secret_valid(filter_mode, secret):
                     valid_secrets.append({'secret': secret['secret'], 'score': secret['total_score']})
 

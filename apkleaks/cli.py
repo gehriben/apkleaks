@@ -23,6 +23,9 @@ def argument():
 	parser.add_argument("-p", "--pattern", help="Path to custom patterns JSON", type=str, required=False)
 	parser.add_argument("-a", "--args", help="Disassembler arguments (e.g. --threads-count 5 --deobf)", type=str, required=False)
 	parser.add_argument("-v", "--verbose", help="Activates verbose mode. Needs path to store decompiled files", type=str, required=False)
+	parser.add_argument("--pattern_matcher", help="Activates pattern_matcher", required=False, action="store_true")
+	parser.add_argument("--key_extractor", help="Activates key_extractor", required=False, action="store_true")
+	parser.add_argument("--credentials_extractor", help="Activates credentials_extractor", required=False, action="store_true")
 	parser.add_argument("--json", help="Save as JSON format", required=False, action="store_true")
 	
 	arg = parser.parse_args()

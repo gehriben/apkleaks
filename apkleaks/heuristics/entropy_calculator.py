@@ -1,10 +1,10 @@
 import math
 
 class EntropyCalculator():
-    def __init__(self, string_sequence):
-        self.string_sequence = string_sequence
+    def __init__(self):
+        pass
 
-    def calculate_shannon_entropy(self):
+    def calculate_shannon_entropy(self, string_sequence):
         """
         Calculates the Shannonx entropy for the given string.
 
@@ -15,11 +15,11 @@ class EntropyCalculator():
         :rtype: float
         """
         ent = 0.0
-        if len(self.string_sequence) < 2:
+        if len(string_sequence) < 2:
             return ent
-        size = float(len(self.string_sequence))
+        size = float(len(string_sequence))
         freq = dict()
-        for char in self.string_sequence:
+        for char in string_sequence:
             if char in freq:
                 freq[char] = freq[char] + 1
             else:

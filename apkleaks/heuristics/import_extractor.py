@@ -1,7 +1,6 @@
 import traceback
 import re
 
-CRYPTO_IMPORTS = "import [a-zA-Z]{1,}[.]{1,}crypto[.][a-zA-Z.;]{1,}"
 IMPORT_REGEX = "[i|I][m|M][p|P][o|O][r|R][t|T] [a-zA-Z.]{1,}[;]"
 
 class ImportExtractor():
