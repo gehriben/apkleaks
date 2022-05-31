@@ -66,8 +66,8 @@ class Scan():
         verbose = verbosepath if VERBOSE else None
         json = False
         pattern_matcher = True
-        key_extractor = False
-        credentials_extractor = False
+        key_extractor = True
+        credentials_extractor = True
         return file, output, pattern, disargs, verbose, json, pattern_matcher, key_extractor, credentials_extractor
 
     def run_apkleaks(self, apkleaks):
