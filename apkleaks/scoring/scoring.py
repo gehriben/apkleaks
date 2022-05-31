@@ -11,6 +11,10 @@ class Scoring():
                     self.__score_imports(pattern)
                 elif heuristic_name == 'keywords' and 'keyword_searcher' in pattern.results:
                     self.__score_keyword_search(pattern)
+                elif heuristic_name == 'password_validation' and 'password_validator' in pattern.results:
+                    self.__score_password_validation(pattern)
+                elif heuristic_name == 'ping' and 'ping_check' in pattern.results:
+                    self.__score_ping_check(pattern)
         
         if not pattern.is_empty():
             self.__calculate_total_score(pattern)
@@ -40,6 +44,24 @@ class Scoring():
                 score = pattern.keyword_score
                 
             keyword_searcher['score'] = score
+
+    def __score_password_validation(self, pattern):
+        self.total_possible_score += pattern.password_validation_score
+        for password_validation in pattern.results['password_validator']:
+            score = 0
+            if password_validation['rating'] == 'it is a valid password':
+                score = pattern.password_validation_score
+                
+            password_validation['score'] = score
+
+    def __score_ping_check(self, pattern):
+        self.total_possible_score += pattern.ping_check_score
+        for ping_check in pattern.results['ping_check']:
+            score = 0
+            if ping_check['ping_check'] == 'Host is alive':
+                score = pattern.ping_check_score
+                
+            ping_check['score'] = score
 
     def __calculate_total_score(self, pattern):
         for secret in pattern.results['possible_secrets']:

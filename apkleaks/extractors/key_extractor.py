@@ -3,6 +3,8 @@ import base64
 import os
 import math
 
+from tqdm import tqdm
+
 from apkleaks.heuristics.entropy_calculator import EntropyCalculator
 from apkleaks.heuristics.string_detection import StringDetection
 
@@ -22,19 +24,21 @@ class KeyExtractor():
         self._entropy_calculator = EntropyCalculator()
         self._string_detection = StringDetection()
 
-    def extract_secret_key(self, key_extractor_pattern, sourcepath):
-        found_secret_keys = self.file_reader(sourcepath)
+    def extract_secret_key(self, key_extractor_pattern, sourcepath, total_files):
+        found_secret_keys = self.file_reader(sourcepath, total_files)
 
         if found_secret_keys:
             key_extractor_pattern.results['possible_secrets'] = found_secret_keys
 
     # Prüft ob ein Regex Pattern mit dem Source Code match und so ein Secret offenbart
-    def file_reader(self, path) -> list():
+    def file_reader(self, path, total_files) -> list():
         found_matches = []
+        progressbar = tqdm(total=total_files)
         for fp, _, files in os.walk(path):
             for fn in files:
                 filepath = os.path.join(fp, fn)
                 with open(filepath, errors='ignore') as handle:
+                    progressbar.set_description("Key_Extractor: processing %s" % filepath)
                     try:
                         linenumber = 0
                         for line in handle.readlines():
@@ -45,6 +49,8 @@ class KeyExtractor():
                             linenumber += 1
                     except Exception:
                         print(traceback.format_exc())
+                    
+                    progressbar.update(1)
 
         return found_matches
 

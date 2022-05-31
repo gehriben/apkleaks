@@ -39,8 +39,8 @@ RUN echo "Building image for user ${USER_NAME:-ubuntu}:${GROUP_NAME:-ubuntu} wit
 COPY --chown=${USER_NAME:-ubuntu}:${GROUP_NAME:-ubuntu} --from=builder /install /usr/local/lib/python3.9/site-packages
 
 # USER ${USER_NAME:-ubuntu}
-USER ${USER_NAME:-ubuntu}
+USER ${ubuntu}
 
 WORKDIR /app
 ENTRYPOINT ["python3", "cli.py"]
-CMD ["do_nothing"]
+CMD ["do-nothing"]

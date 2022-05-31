@@ -17,8 +17,8 @@ SCORE_CREDENTIAL_FOUND = 20
 SCORE_MATCHING_KEYWORD = 20
 
 CREDENTIALS_KEYWORDS = [
-    '.*[p|P][a|A][s|S][s|S][w|W][o|O][r|R][d|D].*[:=].*',
-    '[p|P][a|A][s|S][s|S][ ]?[:=].*',
+    '.*[p|P][a|A][s|S][s|S][w|W][o|O][r|R][d|D].*[=].*',
+    '[p|P][a|A][s|S][s|S][ ]?[=].*',
 ]
 
 class CredentialsExtractor():
@@ -34,12 +34,12 @@ class CredentialsExtractor():
 
     def file_reader(self, path, total_files) -> list():
         found_credentials = []
-        pbar = tqdm(total=total_files)
+        progressbar = tqdm(total=total_files)
         for fp, _, files in os.walk(path):
             for fn in files:
                 filepath = os.path.join(fp, fn)
                 with open(filepath, errors='ignore') as handle:
-                    pbar.set_description("Processing %s" % filepath)
+                    progressbar.set_description("Credentials_Extractor: processing %s" % filepath)
                     try:
                         linenumber = 0
                         for line in handle.readlines():
@@ -50,7 +50,7 @@ class CredentialsExtractor():
                     except Exception:
                         print(traceback.format_exc())
                     
-                    pbar.update(1)
+                    progressbar.update(1)
 
         return found_credentials
 

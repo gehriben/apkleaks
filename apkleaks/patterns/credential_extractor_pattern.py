@@ -9,6 +9,7 @@ NAME = "Credential_Extractor"
 ENTROPY_THRESHOLD = 3.0
 
 ENTROPY_SCORE = 10
+PASSWORD_VALIDATION_SCORE = 10
 
 class CredentialExtractorPattern(Pattern):
     def __init__(self):
@@ -18,5 +19,6 @@ class CredentialExtractorPattern(Pattern):
         self.entropy_threshold = ENTROPY_THRESHOLD
 
         self.entropy_score = ENTROPY_SCORE
+        self.password_validation_score = PASSWORD_VALIDATION_SCORE
 
-        Pattern.__init__(self, self.name, self.regexes, heuristic_entropy=True)
+        Pattern.__init__(self, self.name, self.regexes, heuristic_entropy=True, heuristic_password=True)

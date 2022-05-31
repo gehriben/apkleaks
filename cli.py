@@ -5,6 +5,7 @@ import isg.logging
 
 from isg.config import Config
 from apk_scanner.scan import Scan
+from apkleaks.heuristics.ping_check import PingCheck
 
 app_config = Config('config.yml', namespace='HDV')
 log_path = app_config['paths']['logs']

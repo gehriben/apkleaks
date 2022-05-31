@@ -59,7 +59,7 @@ class APKLeaks:
 		self.tempdir = tempfile.mkdtemp(prefix=self.prefix) if not self.verbose else self.verbose
 		self.main_dir = os.path.dirname(os.path.realpath(__file__))
 		self.output = tempfile.mkstemp(suffix=".%s" % ("json" if self.json else "txt"), prefix=self.prefix)[1] if self.args_output is None else self.args_output
-		self.fileout = open(self.output, "%s" % ("w" if self.json else "a"))
+		self.fileout = open(self.output, "%s" % ("w"))
 		self.pattern = os.path.join(str(Path(self.main_dir).parent), "config", "regexes.json") if self.args_pattern is None else self.args_pattern
 		self.patterns = list()
 		self.out_json = {}
@@ -135,33 +135,43 @@ class APKLeaks:
 					sys.exit(util.writeln("\n** Interrupted. Aborting...", col.FAIL))
 
 		if self.args_key_extractor:
+			_key_extractor_pattern = KeyExtractorPattern()
 			#Try to extract aes key with entropy based searcher
 			try:
-				thread_aes_key_extractor = threading.Thread(target = self.extract_secret_key)
+				thread_aes_key_extractor = threading.Thread(target = self.extract_secret_key, args = (_key_extractor_pattern,))
 				thread_aes_key_extractor.start()
 			except KeyboardInterrupt:
 				sys.exit(util.writeln("\n** Interrupted. Aborting...", col.FAIL))
 
 		if self.args_credentials_extractor:
+			_credential_extractor_pattern = CredentialExtractorPattern()
 			#Try to extract credentials key with keyword based searcher
 			try:
-				thread_credentials_extractor = threading.Thread(target = self.extract_credentials)
+				thread_credentials_extractor = threading.Thread(target = self.extract_credentials, args = (_credential_extractor_pattern,))
 				thread_credentials_extractor.start()
 			except KeyboardInterrupt:
 				sys.exit(util.writeln("\n** Interrupted. Aborting...", col.FAIL))
 		
+		# Wait on Threads to finish
 		if self.args_pattern_matcher:
 			for scan_thread in scan_threads:
 				scan_thread.join()
-
 		if self.args_key_extractor:
 			thread_aes_key_extractor.join()
 		if self.args_credentials_extractor:	
 			thread_credentials_extractor.join()
 
+		# Output results
+		if self.args_pattern_matcher:
+			for pattern in self.patterns:
+				self.output_results(pattern)
+		if self.args_key_extractor:
+			self.output_results(_key_extractor_pattern)
+		if self.args_credentials_extractor:	
+			self.output_results(_credential_extractor_pattern)
+
 	def extract(self, pattern):
-		print(f"--- Search for pattern {pattern.name} ---")
-		self._pattern_matcher.search_pattern_matches(pattern, self.tempdir)
+		self._pattern_matcher.search_pattern_matches(pattern, self.tempdir, self.total_files)
 		self._heuristics.apply_heuristics(pattern)
 
 		scoring = Scoring()
@@ -170,14 +180,12 @@ class APKLeaks:
 		secret_filter = SecretFilter()
 		secret_filter.filter_secrets(RESTRICTIONS.MEDIUM, pattern)
 		
-		self.output_results(pattern)
+		# self.output_results(pattern)
 		# print(f"--- {pattern.name} ---")
 		# print(pattern.results)
 
-	def extract_secret_key(self):
-		print(f"--- Search for Secret Keys ---")
-		_key_extractor_pattern = KeyExtractorPattern()
-		self._key_extractor.extract_secret_key(_key_extractor_pattern, self.tempdir)
+	def extract_secret_key(self, _key_extractor_pattern):
+		self._key_extractor.extract_secret_key(_key_extractor_pattern, self.tempdir, self.total_files)
 		self._heuristics.apply_heuristics(_key_extractor_pattern)
 
 		scoring = Scoring()
@@ -186,11 +194,9 @@ class APKLeaks:
 		secret_filter = SecretFilter()
 		secret_filter.filter_secrets(RESTRICTIONS.MEDIUM, _key_extractor_pattern)
 		
-		self.output_results(_key_extractor_pattern)
+		# self.output_results(_key_extractor_pattern)
 
-	def extract_credentials(self):
-		print(f"--- Search for Credentials ---")
-		_credential_extractor_pattern = CredentialExtractorPattern()
+	def extract_credentials(self, _credential_extractor_pattern):
 		self._credential_extractor.search_credentials(_credential_extractor_pattern, self.tempdir, self.total_files)
 		self._heuristics.apply_heuristics(_credential_extractor_pattern)
 
@@ -200,7 +206,7 @@ class APKLeaks:
 		secret_filter = SecretFilter()
 		secret_filter.filter_secrets(RESTRICTIONS.MEDIUM, _credential_extractor_pattern)
 		
-		self.output_results(_credential_extractor_pattern)
+		# self.output_results(_credential_extractor_pattern)
 
 	def output_results(self, pattern):
 		if 'valid_secrets' in pattern.results:

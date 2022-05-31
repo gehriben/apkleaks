@@ -2,12 +2,14 @@ import os
 import re
 import traceback
 
+from tqdm import tqdm
+
 class PatternMatcher():
     def __init__(self):
         pass
     
-    def search_pattern_matches(self, pattern, sourcepath):
-        matches = self.file_reader(pattern, sourcepath)
+    def search_pattern_matches(self, pattern, sourcepath, total_files):
+        matches = self.file_reader(pattern, sourcepath, total_files)
         for match in matches:
             if pattern.name == "LinkFinder":
                 if re.match(r"^.(L[a-z]|application|audio|fonts|image|kotlin|layout|multipart|plain|text|video).*\/.+", match['secret']) is not None:
@@ -18,12 +20,14 @@ class PatternMatcher():
             pattern.results['possible_secrets'] = matches
 
     # Prüft ob ein Regex Pattern mit dem Source Code match und so ein Secret offenbart
-    def file_reader(self, pattern, path) -> list():
+    def file_reader(self, pattern, path, total_files) -> list():
         found_matches = []
+        progressbar = tqdm(total=total_files)
         for fp, _, files in os.walk(path):
             for fn in files:
                 filepath = os.path.join(fp, fn)
                 with open(filepath, errors='ignore') as handle:
+                    progressbar.set_description("Pattern_Matcher (%s): processing %s" % (pattern.name, filepath))
                     try:
                         linenumber = 0
                         for line in handle.readlines():
@@ -31,6 +35,8 @@ class PatternMatcher():
                             linenumber += 1
                     except Exception:
                         print(traceback.format_exc())
+                    
+                    progressbar.update(1)
 
         return found_matches
 

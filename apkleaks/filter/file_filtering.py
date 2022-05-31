@@ -22,7 +22,8 @@ EXCLUDED_DIRECTORIES = [
     'androidx',
     'google',
     'mysql',
-    'kotlin'
+    'kotlin',
+    'kotlinx'
 ]
 
 class FileFiltering():
