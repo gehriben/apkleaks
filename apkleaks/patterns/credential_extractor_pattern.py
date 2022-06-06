@@ -3,13 +3,14 @@ import os
 from pathlib import Path
 
 from apkleaks.patterns.pattern import Pattern
+from apkleaks.scoring.normal_score_type import NormalScore
+from apkleaks.scoring.additive_score_type import AdditiveScore
 
 NAME = "Credential_Extractor"
 
 ENTROPY_THRESHOLD = 3.0
 
-ENTROPY_SCORE = 10
-PASSWORD_VALIDATION_SCORE = 10
+ENTROPY_SCORE = 5
 
 class CredentialExtractorPattern(Pattern):
     def __init__(self):
@@ -19,6 +20,9 @@ class CredentialExtractorPattern(Pattern):
         self.entropy_threshold = ENTROPY_THRESHOLD
 
         self.entropy_score = ENTROPY_SCORE
-        self.password_validation_score = PASSWORD_VALIDATION_SCORE
 
         Pattern.__init__(self, self.name, self.regexes, heuristic_entropy=True, heuristic_password=True)
+
+        self.scoring_types['entropy'] = NormalScore("Entropy_Score", {'entropy':ENTROPY_SCORE})
+
+        self.max_possible_score = Pattern.calculate_max_possible_score(self) 

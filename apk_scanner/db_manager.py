@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-COLLECTION_NAME = "apkleaks_results_v2"
+COLLECTION_NAME = "apkleaks_results"
 
 class MongoDB(object):
     def __init__(self):

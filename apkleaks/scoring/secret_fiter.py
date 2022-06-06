@@ -2,8 +2,8 @@ from enum import Enum
 
 class RESTRICTIONS(Enum):
     LOW = 0
-    MEDIUM = 1/3
-    HIGH = 2/3
+    MEDIUM = 2/3
+    HIGH = 3/3
 
 class SecretFilter():
     def __init__(self):
