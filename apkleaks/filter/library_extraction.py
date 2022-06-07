@@ -30,5 +30,3 @@ class LibraryExtraction():
             comm = comm.replace("\'","\"")
             # comm = jadx [APK Name].apk -d /tmp/apkleaks-[APK Name]
             os.system(comm)
-        
-        return outputfile

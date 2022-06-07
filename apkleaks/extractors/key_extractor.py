@@ -19,6 +19,11 @@ SCORE_KEY_FOUND = 30
 SCORE_MATCHING_IMPORTS = 20
 SCORE_MATCHING_KEYWORD = 10
 
+EXCLUDED_FILE_EXTENSIONS = [
+	'.so.txt',
+    '.dex'
+]
+
 class KeyExtractor():
     def __init__(self):
         self._entropy_calculator = EntropyCalculator()
@@ -37,20 +42,21 @@ class KeyExtractor():
         for fp, _, files in os.walk(path):
             for fn in files:
                 filepath = os.path.join(fp, fn)
-                with open(filepath, errors='ignore') as handle:
-                    progressbar.set_description("Key_Extractor: processing %s" % filepath)
-                    try:
-                        linenumber = 0
-                        for line in handle.readlines():
-                            entropy = self._entropy_calculator.calculate_shannon_entropy(line)
-                            secret_key = self.contains_aes_key(line, entropy)
-                            if secret_key:
-                                self.oragnize_result(found_matches, secret_key, line, linenumber, filepath) 
-                            linenumber += 1
-                    except Exception:
-                        print(traceback.format_exc())
-                    
-                    progressbar.update(1)
+                if not self.check_if_file_is_excluded(filepath):
+                    with open(filepath, errors='ignore') as handle:
+                        progressbar.set_description("Key_Extractor: processing %s" % filepath)
+                        try:
+                            linenumber = 0
+                            for line in handle.readlines():
+                                entropy = self._entropy_calculator.calculate_shannon_entropy(line)
+                                secret_key = self.contains_aes_key(line, entropy)
+                                if secret_key:
+                                    self.oragnize_result(found_matches, secret_key, line, linenumber, filepath) 
+                                linenumber += 1
+                        except Exception:
+                            print(traceback.format_exc())
+                        
+                        progressbar.update(1)
 
         return found_matches
 
@@ -100,4 +106,11 @@ class KeyExtractor():
         }
 
         found_matches.append(result)
+
+    def check_if_file_is_excluded(self, filepath):
+        for excluded_file_extension in EXCLUDED_FILE_EXTENSIONS:
+            if filepath.endswith(excluded_file_extension):
+                return True
+
+        return False
         	

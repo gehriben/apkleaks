@@ -21,6 +21,11 @@ CREDENTIALS_KEYWORDS = [
     '[p|P][a|A][s|S][s|S][ ]?[=].*',
 ]
 
+EXCLUDED_FILE_EXTENSIONS = [
+	'.so.txt',
+    '.dex'
+]
+
 class CredentialsExtractor():
     def __init__(self):
         self._keyword_searcher = KeywordSearcher(CREDENTIALS_KEYWORDS)
@@ -38,19 +43,20 @@ class CredentialsExtractor():
         for fp, _, files in os.walk(path):
             for fn in files:
                 filepath = os.path.join(fp, fn)
-                with open(filepath, errors='ignore') as handle:
-                    progressbar.set_description("Credentials_Extractor: processing %s" % filepath)
-                    try:
-                        linenumber = 0
-                        for line in handle.readlines():
-                            line_with_possible_credentials = self._keyword_searcher.search_keywords_in_line(line)
-                            if line_with_possible_credentials:
-                                self.extract_credentails(found_credentials, line_with_possible_credentials, line, linenumber, filepath)
-                            linenumber += 1
-                    except Exception:
-                        print(traceback.format_exc())
-                    
-                    progressbar.update(1)
+                if not self.check_if_file_is_excluded(filepath):
+                    with open(filepath, errors='ignore') as handle:
+                        progressbar.set_description("Credentials_Extractor: processing %s" % filepath)
+                        try:
+                            linenumber = 0
+                            for line in handle.readlines():
+                                line_with_possible_credentials = self._keyword_searcher.search_keywords_in_line(line)
+                                if line_with_possible_credentials:
+                                    self.extract_credentails(found_credentials, line_with_possible_credentials, line, linenumber, filepath)
+                                linenumber += 1
+                        except Exception:
+                            print(traceback.format_exc())
+                        
+                        progressbar.update(1)
 
         return found_credentials
 
@@ -76,3 +82,10 @@ class CredentialsExtractor():
         }
 
         found_credentials.append(result)
+    
+    def check_if_file_is_excluded(self, filepath):
+        for excluded_file_extension in EXCLUDED_FILE_EXTENSIONS:
+            if filepath.endswith(excluded_file_extension):
+                return True
+
+        return False

@@ -5,7 +5,7 @@ services:
     container_name: mongodb
     image: mongo
     ports:
-      - ${MONGODB_PORT:-27017}:27017
+      - 127.0.0.1:${MONGODB_PORT:-27017}:27017
     env_file:
       - mongo.env
     volumes:

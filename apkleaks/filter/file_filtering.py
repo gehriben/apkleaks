@@ -3,10 +3,13 @@ import shutil
 
 from apkleaks.utils import util
 from apkleaks.colors import color as col
+from apkleaks.filter.library_extraction import LibraryExtraction
 
 ALLOWED_FILE_EXTENSIONS = [
 	'.java',
-	'.xml'
+	'.xml',
+    '.dex',
+    '.txt'
 ]
 
 SPECIAL_FILE_EXTENSIONS = [
@@ -60,6 +63,10 @@ class FileFiltering():
         if self.is_file_excluded(filepath):
             return False
 
+        if self.is_file_special(filepath):
+            library_extraction = LibraryExtraction()
+            library_extraction.start_decompiling(filepath)
+
         if not self.is_file_extension_allowed(filepath):
             return False
 
@@ -77,6 +84,13 @@ class FileFiltering():
             if filepath.endswith(allowed_file_extension):
                 return True
 
+        return False
+
+    def is_file_special(self, filepath):
+        for special_file_extension in SPECIAL_FILE_EXTENSIONS:
+            if filepath.endswith(special_file_extension):
+                return True
+        
         return False
 
     def check_folder(self, folderpath):

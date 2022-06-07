@@ -28,7 +28,7 @@ class Pattern():
             'imports': AdditiveScore("Import_Score", {'imports':STANDARD_IMPORTS_SCORE}),
             'keywords': NormalScore("Keyword_Score", {'keywords':STANDARD_KEYWORDS_SCORE}), 
             'endpoint': NormalScore("Endpoint_Score", {'endpoint':STANDARD_ENDPOINT_SCORE}), 
-            'ping': AdditiveScore("Ping_Score", {'ping_check':STANDARD_PING_SCORE}) }
+            'ping': NormalScore("Ping_Score", {'ping_check':STANDARD_PING_SCORE}) }
         
         self.max_possible_score = self.calculate_max_possible_score()
 
@@ -53,7 +53,6 @@ class Pattern():
         max_possible_score = 0
         for scoring_type, object in self.scoring_types.items():
             if self.heuristics_status[scoring_type]:
-                print(f"{scoring_type} has max_score {object.max_score}")
                 max_possible_score += object.max_score
 
         return max_possible_score
