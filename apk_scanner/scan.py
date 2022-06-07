@@ -1,6 +1,7 @@
 import argparse
 import os
 import json
+import shutil
 
 from apkleaks.apkleaks import APKLeaks
 from apk_scanner.file_reader import File_Reader
@@ -12,6 +13,7 @@ APKLEAKS_VERBOSE_PATH = '../apks/sources'
 
 MAX_ITERATIONS = 0
 VERBOSE = True
+WIPE_SOURCES = True
 
 class Scan():
     def __init__(self):
@@ -47,6 +49,10 @@ class Scan():
         if os.path.exists(APKLEAKS_RESULTS_PATH + '/' + apkname) == False:
             os.mkdir(APKLEAKS_RESULTS_PATH + '/' + apkname)
         if os.path.exists(verbose_path) == False and VERBOSE == True:
+            os.mkdir(verbose_path)
+        elif os.path.exists(verbose_path) and WIPE_SOURCES and VERBOSE:
+            print(f"Source folder for {apkname} already exists! Wipe mode is activated so folder will be deleted an recreated.")
+            shutil.rmtree(verbose_path)
             os.mkdir(verbose_path)
 
         return apk_path, result_path, verbose_path
