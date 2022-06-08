@@ -12,7 +12,7 @@ class DataAnalyser():
         firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_apkleaks_information_with_appnames()
         apkleaks_apks = self._apkleaks_analyser.get_apk_names()
 
-        self.process_apks(firmwaredroid_apkleaks_data, apkleaks_apks)
+        self.process_apks(apkleaks_apks, firmwaredroid_apkleaks_data)
 
     def process_apks(self, apkleaks_apks, firmwaredroid_apkleaks_data):
         stored_entries_counter = 0
