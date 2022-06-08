@@ -18,7 +18,7 @@ class DataAnalyser():
         stored_entries_counter = 0
         not_collected_apks = 0
         for apkleaks_apk in apkleaks_apks:
-            if apkleaks_apk in firmwaredroid_apkleaks_data:
+            if apkleaks_apk+'.apk' in firmwaredroid_apkleaks_data:
                 results = firmwaredroid_apkleaks_data[apkleaks_apk]
                 stored_entries_counter += self.store_overlap_apks(results, apkleaks_apk)
             else:
