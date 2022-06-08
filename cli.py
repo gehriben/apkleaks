@@ -34,7 +34,7 @@ def start_data_analysis():
         isg.logging.init_logging('apk-scanner', app_config['paths']['logs'],
                                     base_level=logging.DEBUG if debug else logging.INFO, silent=silent)
         data_analyser = DataAnalyser()
-        data_analyser.analyse_data()
+        data_analyser.start_analysis()
     except:
         logging.exception('Error running apk-scanner')
         logging.disable(logging.CRITICAL)
