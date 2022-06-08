@@ -30,14 +30,15 @@ class DataAnalyser():
     def store_overlap_apks(self, results, appname):
         stored_entries_counter = 0
         for result in results:
-            for match in result["matches"]: 
-                json_object = {
-                        'appname': appname,
-                        'secret': match,
-                        'falsePositive': None
-                    }
+            if result["name"] != 'LinkFinder':
+                for match in result["matches"]: 
+                    json_object = {
+                            'appname': appname,
+                            'secret': match,
+                            'falsePositive': None
+                        }
 
-                self._apkleaks_analyser.store_data(self._apkleaks_analyser.db_firmwaredroid_data, result["name"], json_object)
-                stored_entries_counter += 1
+                    self._apkleaks_analyser.store_data(self._apkleaks_analyser.db_firmwaredroid_data, result["name"], json_object)
+                    stored_entries_counter += 1
         
         return stored_entries_counter

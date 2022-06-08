@@ -2,7 +2,7 @@ from click import progressbar
 from pymongo import MongoClient
 from tqdm import tqdm
 
-MAX_OUTPUT_LIMIT = 100000
+MAX_OUTPUT_LIMIT = 1000000
 EXCLUDED_PATTERNS = [
     "LinkFinder",
     "IP_Address",
