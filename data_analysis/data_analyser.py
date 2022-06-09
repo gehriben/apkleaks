@@ -9,25 +9,35 @@ class DataAnalyser():
     def start_analysis(self):
         # self._apkleaks_analyser.extract_secrets()
         # names = self._firmwaredroid_analyser.get_apk_names()
-        firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_apkleaks_information_with_appnames()
-        apkleaks_apks = self._apkleaks_analyser.get_apk_names()
+        # firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_apkleaks_information_with_appnames()
+        # apkleaks_apks = self._apkleaks_analyser.get_apk_names()
+        
+        firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.sort_apkleaks_information()
 
-        self.process_apks(apkleaks_apks, firmwaredroid_apkleaks_data)
 
-    def process_apks(self, apkleaks_apks, firmwaredroid_apkleaks_data):
+        # self.compare_and_process_apks(apkleaks_apks, firmwaredroid_apkleaks_data)
+        self.process_top_apks(firmwaredroid_apkleaks_data)
+
+    def compare_and_process_apks(self, apkleaks_apks, firmwaredroid_apkleaks_data):
         stored_entries_counter = 0
         not_collected_apks = 0
         for apkleaks_apk in apkleaks_apks:
             if apkleaks_apk+'.apk' in firmwaredroid_apkleaks_data:
                 results = firmwaredroid_apkleaks_data[apkleaks_apk+'.apk']
-                stored_entries_counter += self.store_overlap_apks(results, apkleaks_apk)
+                stored_entries_counter += self.store_secrets_of_apks(results, apkleaks_apk, self._apkleaks_analyser.db_firmwaredroid_data)
             else:
                 not_collected_apks += 1
 
         print(f"Stored {stored_entries_counter} secrets from FirmwareDroid! {not_collected_apks} apks couldn't get collected!")
-                
+    
+    def process_top_apks(self, firmwaredroid_apkleaks_data):
+        stored_entries_counter = 0
+        for appname, results in firmwaredroid_apkleaks_data.items():
+            stored_entries_counter += self.store_secrets_of_apks(results, appname, self._apkleaks_analyser.db_firmwaredroid_data_top_100)
 
-    def store_overlap_apks(self, results, appname):
+        print(f"Stored {stored_entries_counter} secrets from FirmwareDroid with the top 100 APKs!")
+
+    def store_secrets_of_apks(self, results, appname, db_name):
         stored_entries_counter = 0
         for result in results:
             if result["name"] != 'LinkFinder':
@@ -38,7 +48,7 @@ class DataAnalyser():
                             'falsePositive': None
                         }
 
-                    self._apkleaks_analyser.store_data(self._apkleaks_analyser.db_firmwaredroid_data, result["name"], json_object)
+                    self._apkleaks_analyser.store_data(db_name, result["name"], json_object)
                     stored_entries_counter += 1
         
         return stored_entries_counter

@@ -3,6 +3,8 @@ from pymongo import MongoClient
 from tqdm import tqdm
 
 MAX_OUTPUT_LIMIT = 1000000
+MAX_ELEMENTS = 100
+
 EXCLUDED_PATTERNS = [
     "LinkFinder",
     "IP_Address",
@@ -41,6 +43,7 @@ class FirmwareDroidAnalyser():
         return apk_list
     
     def get_apkleaks_information_with_appnames(self):
+
         firmwaredroid_apkleaks_data = dict()
 
         apkleaks_informations_with_appnames = self.get_apk_leaks_reports_with_app_name()
@@ -60,6 +63,50 @@ class FirmwareDroidAnalyser():
 
         print(" --> Received all FirmewareDroid APKLeaks results")
         return firmwaredroid_apkleaks_data
+
+    def sort_apkleaks_information(self):
+        apkleaks_informations_with_appnames = self.get_apk_leaks_reports_with_app_name()
+
+        apkleaks_results_with_result_length = list()
+        progressbar = tqdm(total=MAX_OUTPUT_LIMIT)
+        print("--- Calculate secret amount for each result in FirmwareDroid DB ---")
+        for apkleaks_information_with_appnames in apkleaks_informations_with_appnames:
+            if apkleaks_information_with_appnames["android_app"]:
+                appname = apkleaks_information_with_appnames["android_app"][0]["filename"]
+
+                progressbar.set_description("Process %s" % appname)    
+
+                for apkleaks_result in apkleaks_information_with_appnames["results"]["results"]:
+                    if apkleaks_result["name"] != "LinkFinder":
+                        apkleaks_information_with_appnames["secret_size"] += len(apkleaks_result["matches"])
+ 
+                apkleaks_results_with_result_length.append(apkleaks_information_with_appnames)
+
+                progressbar.update(1)
+
+
+        print("--- Sort all apks according to their result size ---")
+        return self.organize_sorted_apkleaks_secrets(apkleaks_results_with_result_length.sort(key=self.get_secret_size))
+
+    def organize_sorted_apkleaks_secrets(self, apkleaks_results_with_result_length):
+        firmwaredroid_apkleaks_data = dict()
+        progressbar = tqdm(total=MAX_ELEMENTS)
+        print("--- Collect Top 100 APKLeaks results from FirmwareDroid DB ---")
+        for apkleaks_result in apkleaks_results_with_result_length[:MAX_ELEMENTS]:
+            appname = apkleaks_result["android_app"][0]["filename"]
+
+            progressbar.set_description("Process %s" % appname)    
+
+            apkleaks_result_content = apkleaks_result["results"]["results"]
+            firmwaredroid_apkleaks_data[appname] = apkleaks_result_content
+
+            progressbar.update(1)
+        
+        return firmwaredroid_apkleaks_data
+    
+    def get_secret_size(self, elem):
+        return elem["secret_size"]
+
 
     def analyse_apk_leaks(self):
         apkleaks_reports = self.get_apk_leaks_reports()

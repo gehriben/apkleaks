@@ -8,6 +8,7 @@ class ApkleaksAnalyser():
         self.db = self.client["apk_scanner"]
         self.db_apk_scanner_secrets = self.client["apk_scanner_secrets"]
         self.db_firmwaredroid_data = self.client["firmwaredroid_secrets"]
+        self.db_firmwaredroid_data_top_100 = self.client["firmwaredroid_secrets_top_100"]
 
     def get_apk_names(self):
         apk_names = self.get_apks()
