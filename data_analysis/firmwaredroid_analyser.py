@@ -78,7 +78,7 @@ class FirmwareDroidAnalyser():
 
                 apkleaks_information_with_appnames["secret_size"] = 0
                 for apkleaks_result in apkleaks_information_with_appnames["results"]["results"]:
-                    if apkleaks_result["name"] != "LinkFinder" and apkleaks_result["name"] != "JSON_Web_Token":
+                    if apkleaks_result["name"] != "LinkFinder" and apkleaks_result["name"] != "JSON_Web_Token" and apkleaks_result["name"] != "IP_Address":
                         apkleaks_information_with_appnames["secret_size"] += len(apkleaks_result["matches"])
  
                 apkleaks_results_with_result_length.append(apkleaks_information_with_appnames)
@@ -86,7 +86,6 @@ class FirmwareDroidAnalyser():
                 progressbar.update(1)
 
         apkleaks_results_with_result_length.sort(key=self.get_secret_size, reverse=True)
-        print(apkleaks_results_with_result_length[0])
         print("--- Sort all apks according to their result size ---")
         return self.organize_sorted_apkleaks_secrets(apkleaks_results_with_result_length)
 
