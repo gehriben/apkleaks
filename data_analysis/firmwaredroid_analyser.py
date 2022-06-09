@@ -78,7 +78,10 @@ class FirmwareDroidAnalyser():
 
                 for apkleaks_result in apkleaks_information_with_appnames["results"]["results"]:
                     if apkleaks_result["name"] != "LinkFinder":
-                        apkleaks_information_with_appnames["secret_size"] += len(apkleaks_result["matches"])
+                        if "secret_size" in apkleaks_information_with_appnames:
+                            apkleaks_information_with_appnames["secret_size"] += len(apkleaks_result["matches"])
+                        else:
+                            apkleaks_information_with_appnames["secret_size"] = 0
  
                 apkleaks_results_with_result_length.append(apkleaks_information_with_appnames)
 
