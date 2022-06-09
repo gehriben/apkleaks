@@ -85,15 +85,16 @@ class FirmwareDroidAnalyser():
 
                 progressbar.update(1)
 
-
+        apkleaks_results_with_result_length.sort(key=self.get_secret_size, reverse=True)
+        print(apkleaks_results_with_result_length[0])
         print("--- Sort all apks according to their result size ---")
-        return self.organize_sorted_apkleaks_secrets(apkleaks_results_with_result_length.sort(key=self.get_secret_size))
+        return self.organize_sorted_apkleaks_secrets(apkleaks_results_with_result_length)
 
     def organize_sorted_apkleaks_secrets(self, apkleaks_results_with_result_length):
         firmwaredroid_apkleaks_data = dict()
         progressbar = tqdm(total=MAX_ELEMENTS)
         print("--- Collect Top 100 APKLeaks results from FirmwareDroid DB ---")
-        for apkleaks_result in apkleaks_results_with_result_length[:MAX_ELEMENTS]:
+        for apkleaks_result in apkleaks_results_with_result_length[0:MAX_ELEMENTS]:
             appname = apkleaks_result["android_app"][0]["filename"]
 
             progressbar.set_description("Process %s" % appname)    
