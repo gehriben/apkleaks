@@ -70,8 +70,8 @@ class FirmwareDroidAnalyser():
 
         # Step 1a
         print("--- Merge apkleaks results with same appname together ---")
-        progressbar = tqdm(total=len(appnames_with_apkleaks_results_dict.keys()))
         appnames_with_apkleaks_results_dict = dict()
+        progressbar = tqdm(total=len(appnames_with_apkleaks_results_dict.keys()))
         for entry in apkleaks_results_with_appnames:
             if entry["android_app"]:
                 apkname = entry['android_app'][0]['filename']
