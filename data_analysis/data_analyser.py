@@ -33,7 +33,8 @@ class DataAnalyser():
     def process_top_apks(self, firmwaredroid_apkleaks_data):
         stored_entries_counter = 0
         for appname, results in firmwaredroid_apkleaks_data.items():
-            stored_entries_counter += self.store_secrets_of_apks(results, appname, self._apkleaks_analyser.db_firmwaredroid_data_top_100)
+            self._apkleaks_analyser.store_appnames(self._apkleaks_analyser.firmwaredroid_secrets_top_apks, appname)
+            stored_entries_counter += self.store_secrets_of_apks(results, appname, self._apkleaks_analyser.firmwaredroid_secrets_top_apks)
 
         print(f"Stored {stored_entries_counter} secrets from FirmwareDroid with the top most APKs!")
 

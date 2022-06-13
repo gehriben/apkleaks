@@ -8,7 +8,7 @@ class ApkleaksAnalyser():
         self.db = self.client["apk_scanner"]
         self.db_apk_scanner_secrets = self.client["apk_scanner_secrets"]
         self.db_firmwaredroid_data = self.client["firmwaredroid_secrets"]
-        self.db_firmwaredroid_data_top_100 = self.client["firmwaredroid_secrets_top_100"]
+        self.firmwaredroid_secrets_top_apks = self.client["firmwaredroid_secrets_top_apks"]
 
     def get_apk_names(self):
         apk_names = self.get_apks()
@@ -49,7 +49,11 @@ class ApkleaksAnalyser():
         
     def store_data(self, db, patternname, secrets):
         collection = db[patternname]
-        collection.insert_one(secrets)  
+        collection.insert_one(secrets) 
+
+    def store_appnames(self, db, appname):
+        collection = db['_Applist']
+        collection.insert_one({"appname": appname}) 
 
     def get_data(self):
         collection = self.db_apk_scanner[COLLECTION_NAME]
