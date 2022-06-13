@@ -77,12 +77,14 @@ class FirmwareDroidAnalyser():
                 apkname = entry['android_app'][0]['filename']
                 apkleaks_results = entry['results']['results']
 
-                progressbar.set_description("Merging %s" % apkname)
-
                 if apkname in appnames_with_apkleaks_results_dict:
+                    progressbar.set_description("Merging %s" % apkname)
+
                     merged_results = self.merge_apkleaks_results(appnames_with_apkleaks_results_dict, apkname, apkleaks_results)
                     appnames_with_apkleaks_results_dict[apkname] = merged_results
                 else:
+                    progressbar.set_description("Adding %s" % apkname)
+                    
                     appnames_with_apkleaks_results_dict[apkname] = apkleaks_results
 
             progressbar.update(1)
