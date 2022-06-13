@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from tqdm import tqdm
 
 MAX_OUTPUT_LIMIT = 1000000
-MAX_ELEMENTS = 1000
+MAX_ELEMENTS = 100
 
 EXCLUDED_PATTERNS = [
     "LinkFinder",
