@@ -124,6 +124,7 @@ class FirmwareDroidAnalyser():
         for new_entry in apkleaks_results:
             for old_entry in old_results:
                 if new_entry['name'] == old_entry['name']:
+                    merged_entry_list = list()
                     # Add results from the existing app
                     merged_entry_list.extend(old_entry['matches'])
                     # Add results from the new app
