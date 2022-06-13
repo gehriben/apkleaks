@@ -64,7 +64,7 @@ class FirmwareDroidAnalyser():
         print(" --> Received all FirmewareDroid APKLeaks results")
         return firmwaredroid_apkleaks_data
 
-    def sort_apkleaks_information(self):
+    def get_top_most_apk_results(self):
         apkleaks_informations_with_appnames = self.get_apk_leaks_reports_with_app_name()
 
         apkleaks_results_with_result_length = list()
@@ -85,14 +85,14 @@ class FirmwareDroidAnalyser():
 
                 progressbar.update(1)
 
-        apkleaks_results_with_result_length.sort(key=self.get_secret_size, reverse=True)
         print("--- Sort all apks according to their result size ---")
+        apkleaks_results_with_result_length.sort(key=self.get_secret_size, reverse=True)
         return self.organize_sorted_apkleaks_secrets(apkleaks_results_with_result_length)
 
     def organize_sorted_apkleaks_secrets(self, apkleaks_results_with_result_length):
         firmwaredroid_apkleaks_data = dict()
         progressbar = tqdm(total=MAX_ELEMENTS)
-        print("--- Collect Top 100 APKLeaks results from FirmwareDroid DB ---")
+        print("--- Collect top most APKLeaks results from FirmwareDroid DB ---")
         for apkleaks_result in apkleaks_results_with_result_length[0:MAX_ELEMENTS]:
             appname = apkleaks_result["android_app"][0]["filename"]
 
@@ -103,6 +103,7 @@ class FirmwareDroidAnalyser():
 
             progressbar.update(1)
         
+        print(f"  --> Collected secrets from {len(firmwaredroid_apkleaks_data.keys())}/{MAX_ELEMENTS} apks")
         return firmwaredroid_apkleaks_data
     
     def get_secret_size(self, elem):
