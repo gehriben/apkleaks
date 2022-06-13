@@ -84,7 +84,7 @@ class FirmwareDroidAnalyser():
                     appnames_with_apkleaks_results_dict[apkname] = merged_results
                 else:
                     progressbar.set_description("Adding %s" % apkname)
-                    
+
                     appnames_with_apkleaks_results_dict[apkname] = apkleaks_results
 
             progressbar.update(1)
@@ -149,7 +149,8 @@ class FirmwareDroidAnalyser():
 
             progressbar.set_description("Process %s" % appname)    
 
-            firmwaredroid_apkleaks_data[appname] = apkleaks_result["results"]
+            secrets = {'results':apkleaks_result["results"], 'secret_size': apkleaks_result["secret_size"] }
+            firmwaredroid_apkleaks_data[appname] = secrets
 
             progressbar.update(1)
         
