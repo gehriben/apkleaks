@@ -46,7 +46,7 @@ class DataAnalyser():
                     json_object = {
                             'appname': appname,
                             'secret': match,
-                            'falsePositive': None
+                            'falsePositive': False
                         }
 
                     self._apkleaks_analyser.store_data(db_name, result["name"], json_object)
