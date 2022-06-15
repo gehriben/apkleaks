@@ -9,14 +9,14 @@ class DataAnalyser():
     def start_analysis(self):
         # self._apkleaks_analyser.extract_secrets()
         # names = self._firmwaredroid_analyser.get_apk_names()
-        # firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_apkleaks_information_with_appnames()
-        # apkleaks_apks = self._apkleaks_analyser.get_apk_names()
+        firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_apkleaks_information_with_appnames()
+        apkleaks_apks = self._apkleaks_analyser.get_apk_names()
         
-        firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_top_most_apk_results()
+        # firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_top_most_apk_results()
 
 
-        # self.compare_and_process_apks(apkleaks_apks, firmwaredroid_apkleaks_data)
-        self.process_top_apks(firmwaredroid_apkleaks_data)
+        self.compare_and_process_apks(apkleaks_apks, firmwaredroid_apkleaks_data)
+        # self.process_top_apks(firmwaredroid_apkleaks_data)
 
     def compare_and_process_apks(self, apkleaks_apks, firmwaredroid_apkleaks_data):
         stored_entries_counter = 0
@@ -24,7 +24,8 @@ class DataAnalyser():
         for apkleaks_apk in apkleaks_apks:
             if apkleaks_apk+'.apk' in firmwaredroid_apkleaks_data:
                 results = firmwaredroid_apkleaks_data[apkleaks_apk+'.apk']
-                stored_entries_counter += self.store_secrets_of_apks(results, apkleaks_apk, self._apkleaks_analyser.db_firmwaredroid_data)
+                self._apkleaks_analyser.store_appnames(self._apkleaks_analyser.db_firmwaredroid_data, apkleaks_apk, results['secret_size'])
+                stored_entries_counter += self.store_secrets_of_apks(results["results"], apkleaks_apk, self._apkleaks_analyser.db_firmwaredroid_data)
             else:
                 not_collected_apks += 1
 

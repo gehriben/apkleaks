@@ -43,26 +43,32 @@ class FirmwareDroidAnalyser():
         return apk_list
     
     def get_apkleaks_information_with_appnames(self):
-
-        firmwaredroid_apkleaks_data = dict()
-
         apkleaks_informations_with_appnames = self.get_apk_leaks_reports_with_app_name()
 
-        progressbar = tqdm(total=MAX_OUTPUT_LIMIT)
         print("--- Collect APKLeaks results from FirmwareDroid DB ---")
-        for apkleaks_information_with_appnames in apkleaks_informations_with_appnames:
-            if apkleaks_information_with_appnames["android_app"]:
-                appname = apkleaks_information_with_appnames["android_app"][0]["filename"]
+        apkleaks_results_with_result_length = list()
+        progressbar = tqdm(total=MAX_OUTPUT_LIMIT)
+        for entry in apkleaks_informations_with_appnames:
+                apkleaks_results_dict = dict()
 
+                appname = entry["android_app"][0]["filename"]
+                apkleaks_results = entry["results"]["results"]
+
+                apkleaks_results_dict["secret_size"] = 0
+                apkleaks_results_dict["results"] = apkleaks_results
+                
                 progressbar.set_description("Process %s" % appname)    
 
-                apkleaks_results = apkleaks_information_with_appnames["results"]["results"]
-                firmwaredroid_apkleaks_data[appname] = apkleaks_results
+                for apkleaks_result in apkleaks_results:
+                    if apkleaks_result["name"] != "LinkFinder" and apkleaks_result["name"] != "JSON_Web_Token" and apkleaks_result["name"] != "IP_Address":
+                        apkleaks_results_dict["secret_size"] += len(apkleaks_result["matches"])
+ 
+                apkleaks_results_with_result_length[appname] = apkleaks_results_dict
 
                 progressbar.update(1)
 
         print(" --> Received all FirmewareDroid APKLeaks results")
-        return firmwaredroid_apkleaks_data
+        return apkleaks_results_with_result_length
 
     def get_top_most_apk_results(self):
         # Step 0
