@@ -46,7 +46,7 @@ class FirmwareDroidAnalyser():
         apkleaks_informations_with_appnames = self.get_apk_leaks_reports_with_app_name()
 
         print("--- Collect APKLeaks results from FirmwareDroid DB ---")
-        apkleaks_results_with_result_length = list()
+        apkleaks_results_with_result_length = dict()
         progressbar = tqdm(total=MAX_OUTPUT_LIMIT)
         for entry in apkleaks_informations_with_appnames:
                 apkleaks_results_dict = dict()
