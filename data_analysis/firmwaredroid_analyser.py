@@ -2,6 +2,8 @@ from click import progressbar
 from pymongo import MongoClient
 from tqdm import tqdm
 
+from data_analysis.firmwaredroid_data_merger import FirmwaredroidDataMerger
+
 MAX_OUTPUT_LIMIT = 1000000
 MAX_ELEMENTS = 100
 
@@ -23,6 +25,7 @@ class FirmwareDroidAnalyser():
     def __init__(self):
         self.client = MongoClient("mongodb://mongodbreader1:j8m88frSYjiKtdmZGP8BY6ZPdvQJyfpF@160.85.255.220:27017/?directConnection=true&authSource=FirmwareDroid")
         self.db = self.client["FirmwareDroid"]
+        self._firmwaredroid_data_merger = FirmwaredroidDataMerger()
         # self.output = "data.txt"
         # self.fileout = open(self.output, "%s" % ("w"))
 
@@ -43,60 +46,47 @@ class FirmwareDroidAnalyser():
         return apk_list
     
     def get_apkleaks_information_with_appnames(self):
-        apkleaks_informations_with_appnames = self.get_apk_leaks_reports_with_app_name()
+        # Step 0
+        apkleaks_results_with_appnames = self.get_apk_leaks_reports_with_app_name()
 
-        print("--- Collect APKLeaks results from FirmwareDroid DB ---")
-        apkleaks_results_with_result_length = dict()
-        progressbar = tqdm(total=MAX_OUTPUT_LIMIT)
-        for entry in apkleaks_informations_with_appnames:
-                apkleaks_results_dict = dict()
+        # Step 1a
+        appnames_with_apkleaks_results_dict = self._firmwaredroid_data_merger.check_firmwaredroid_data_for_merges(apkleaks_results_with_appnames, MAX_OUTPUT_LIMIT)
 
-                appname = entry["android_app"][0]["filename"]
-                apkleaks_results = entry["results"]["results"]
+        # Step 1b
+        apkleaks_results_with_result_length = self.count_secret_amount(appnames_with_apkleaks_results_dict)
 
-                apkleaks_results_dict["secret_size"] = 0
-                apkleaks_results_dict["results"] = apkleaks_results
-                
-                progressbar.set_description("Process %s" % appname)    
+        # Organize results as dict
+        firmwaredroid_apkleaks_data = dict()
+        for entry in apkleaks_results_with_result_length:
+            appname = entry["appname"]
+            
+            apkleaks_results_dict = dict()
+            apkleaks_results_dict["secret_size"] = entry["secret_size"]
+            apkleaks_results_dict["results"] = entry["results"]
 
-                for apkleaks_result in apkleaks_results:
-                    if apkleaks_result["name"] != "LinkFinder" and apkleaks_result["name"] != "JSON_Web_Token" and apkleaks_result["name"] != "IP_Address":
-                        apkleaks_results_dict["secret_size"] += len(apkleaks_result["matches"])
- 
-                apkleaks_results_with_result_length[appname] = apkleaks_results_dict
-
-                progressbar.update(1)
+            firmwaredroid_apkleaks_data[appname] = apkleaks_results_dict
 
         print(" --> Received all FirmewareDroid APKLeaks results")
-        return apkleaks_results_with_result_length
+        return firmwaredroid_apkleaks_data
 
     def get_top_most_apk_results(self):
         # Step 0
         apkleaks_results_with_appnames = self.get_apk_leaks_reports_with_app_name()
 
         # Step 1a
-        print("--- Merge apkleaks results with same appname together ---")
-        appnames_with_apkleaks_results_dict = dict()
-        progressbar = tqdm(total=MAX_OUTPUT_LIMIT)
-        for entry in apkleaks_results_with_appnames:
-            if entry["android_app"]:
-                apkname = entry['android_app'][0]['filename']
-                apkleaks_results = entry['results']['results']
-
-                if apkname in appnames_with_apkleaks_results_dict:
-                    progressbar.set_description("Merging %s" % apkname)
-
-                    merged_results = self.merge_apkleaks_results(appnames_with_apkleaks_results_dict, apkname, apkleaks_results)
-                    appnames_with_apkleaks_results_dict[apkname] = merged_results
-                else:
-                    progressbar.set_description("Adding %s" % apkname)
-
-                    appnames_with_apkleaks_results_dict[apkname] = apkleaks_results
-
-            progressbar.update(1)
-        
+        appnames_with_apkleaks_results_dict = self._firmwaredroid_data_merger.check_firmwaredroid_data_for_merges(apkleaks_results_with_appnames, MAX_OUTPUT_LIMIT)
 
         # Step 1b
+        apkleaks_results_with_result_length = self.count_secret_amount(appnames_with_apkleaks_results_dict)
+        
+        # Step 2
+        print("--- Sort all apks according to their result size ---")
+        apkleaks_results_with_result_length.sort(key=self.get_secret_size, reverse=True)
+
+        # Step 3
+        return self.organize_sorted_apkleaks_secrets(apkleaks_results_with_result_length)  
+
+    def count_secret_amount(self, appnames_with_apkleaks_results_dict):
         print("--- Calculate secret amount for each result in FirmwareDroid DB ---")
         apkleaks_results_with_result_length = list()
         progressbar = tqdm(total=len(appnames_with_apkleaks_results_dict.keys()))
@@ -117,34 +107,7 @@ class FirmwareDroidAnalyser():
 
                 progressbar.update(1)
         
-        # Step 2
-        print("--- Sort all apks according to their result size ---")
-        apkleaks_results_with_result_length.sort(key=self.get_secret_size, reverse=True)
-
-        # Step 3
-        return self.organize_sorted_apkleaks_secrets(apkleaks_results_with_result_length)
-
-    def merge_apkleaks_results(self, appnames_with_apkleaks_results_dict, apkname, apkleaks_results):
-        merged_results_list = list()
-
-        old_results = appnames_with_apkleaks_results_dict[apkname]
-
-        for new_entry in apkleaks_results:
-            for old_entry in old_results:
-                if new_entry['name'] == old_entry['name']:
-                    merged_entry_list = list()
-                    # Add results from the existing app
-                    merged_entry_list.extend(old_entry['matches'])
-                    # Add results from the new app
-                    merged_entry_list.extend(new_entry['matches'])
-                    # Eliminate duplicates
-                    merged_entry_list = list(set(merged_entry_list))
-
-                    # Add merged result to the list of all merged results
-                    merged_result_entry = {'name': old_entry['name'], 'matches':merged_entry_list}
-                    merged_results_list.append(merged_result_entry)
-
-        return merged_results_list          
+        return apkleaks_results_with_result_length
 
     def organize_sorted_apkleaks_secrets(self, apkleaks_results_with_result_length):
         print("--- Collect top most APKLeaks results from FirmwareDroid DB ---")
