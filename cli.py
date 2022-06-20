@@ -6,7 +6,7 @@ import isg.logging
 from isg.config import Config
 from apk_scanner.scan import Scan
 from data_analysis.data_analyser import DataAnalyser
-from apkleaks.heuristics.ping_check import PingCheck
+from data_analysis.data_visualisation import DataVisualisation
 
 app_config = Config('config.yml', namespace='HDV')
 log_path = app_config['paths']['logs']
@@ -35,6 +35,17 @@ def start_data_analysis():
                                     base_level=logging.DEBUG if debug else logging.INFO, silent=silent)
         data_analyser = DataAnalyser()
         data_analyser.start_analysis()
+    except:
+        logging.exception('Error running apk-scanner')
+        logging.disable(logging.CRITICAL)
+
+@apk_scanner_cli.command()
+def start_data_visualisation():
+    try:
+        isg.logging.init_logging('apk-scanner', app_config['paths']['logs'],
+                                    base_level=logging.DEBUG if debug else logging.INFO, silent=silent)
+        data_visualiser = DataVisualisation()
+        data_visualiser.start_visualistaion()
     except:
         logging.exception('Error running apk-scanner')
         logging.disable(logging.CRITICAL)
