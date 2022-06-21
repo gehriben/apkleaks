@@ -16,25 +16,43 @@ class DataVisualisation():
         self.false_positive_count = []
 
     def start_visualistaion(self):
-        self.show_secret_distribution(self.db_manager.db_name_firmwaredroid)
+        self.show_secret_distribution(self.db_manager.db_name_firmwaredroid, self.db_manager.db_name_advanced_apkleaks)
         self.show_false_positive_distribution(self.db_manager.db_name_firmwaredroid)
         self.show_false_positive_difference()
+        self.show_true_positive_difference()
 
-    def show_secret_distribution(self, db):
+    def show_secret_distribution(self, firmwaredroid_db, advanced_apkleaks_db):
         secret_names = []
         secret_count = []
 
-        for collection in self.db_manager.get_collection_names(db):
+        #Old APKLeaks
+        for collection in self.db_manager.get_collection_names(firmwaredroid_db):
             if collection != "_Applist":
-                content_count = self.db_manager.get_document_count(db, collection)
+                content_count = self.db_manager.get_document_count(firmwaredroid_db, collection)
                 secret_names.append(collection)
                 secret_count.append(content_count)
 
         plt.figure(figsize=(30, 20))
         bar = plt.bar(secret_names, secret_count)
-        plt.title("Secret distribution over pattern types")
+        plt.title("Secret distribution over pattern types in old apkleaks")
         plt.bar_label(bar)
-        plt.savefig(PLOT_PATH+'/secret_distribution.png', width=0.3, bbox_inches='tight')
+        plt.savefig(PLOT_PATH+'/secret_distribution_old_apkleaks.png', width=0.3, bbox_inches='tight')
+
+        secret_names = []
+        secret_count = []
+
+        # New AdvancedAPKLeaks
+        for collection in self.db_manager.get_collection_names(advanced_apkleaks_db):
+            if collection != "_Applist":
+                content_count = self.db_manager.get_document_count(advanced_apkleaks_db, collection)
+                secret_names.append(collection)
+                secret_count.append(content_count)
+
+        plt.figure(figsize=(30, 20))
+        bar = plt.bar(secret_names, secret_count)
+        plt.title("Secret distribution over pattern types in advanced apkleaks")
+        plt.bar_label(bar)
+        plt.savefig(PLOT_PATH+'/secret_distribution_new_apkleaks.png', width=0.3, bbox_inches='tight')
 
     def show_false_positive_distribution(self, db):
         for collection in self.db_manager.get_collection_names(db):
@@ -46,12 +64,12 @@ class DataVisualisation():
 
         plt.figure(figsize=(30, 20))
         bar = plt.bar(self.false_positive_names, self.false_positive_count)
-        plt.title("False Positive distribution over pattern types")
+        plt.title("False Positive distribution over pattern types in old apkleaks")
         plt.bar_label(bar)
-        plt.savefig(PLOT_PATH+'/false_positive_distribution.png', width=0.3, bbox_inches='tight')
+        plt.savefig(PLOT_PATH+'/false_positive_distribution_old_apkleaks.png', width=0.3, bbox_inches='tight')
 
     def show_false_positive_difference(self):
-        remaining_false_positive_secrets_dict, removed_false_positive_secrets_dict = self.data_analyser.compare_false_positivs(self.db_manager.db_name_firmwaredroid, self.db_manager.db_name_advanced_apkleaks)
+        remaining_false_positive_secrets_dict, removed_false_positive_secrets_dict = self.data_analyser.compare_false_positives(self.db_manager.db_name_firmwaredroid, self.db_manager.db_name_advanced_apkleaks)
 
         total_false_positive_secrets = sum(self.false_positive_count)
         total_remaining_false_positives = sum(len(lst) for lst in remaining_false_positive_secrets_dict.values())
@@ -98,6 +116,34 @@ class DataVisualisation():
         plt.title("Remaining False Positive pattern distribution")
         plt.bar_label(bar)
         plt.savefig(PLOT_PATH+'/remaining_false_positive.png', width=0.3, bbox_inches='tight')
+    
+    def show_true_positive_difference(self):
+        remaining_true_positive_secrets_dict, removed_true_positive_secrets_dict = self.data_analyser.compare_true_positives(self.db_manager.db_name_firmwaredroid, self.db_manager.db_name_advanced_apkleaks)
+
+        removed_true_positive_secrets_names = []
+        removed_true_positive_secrets_content = []
+        for pattern_name, content in removed_true_positive_secrets_dict.items():
+            removed_true_positive_secrets_names.append(pattern_name)
+            removed_true_positive_secrets_content.append(len(content))
+
+        plt.figure(figsize=(30, 20))
+        bar = plt.bar(removed_true_positive_secrets_names, removed_true_positive_secrets_content)
+        plt.title("Removed True Positive pattern distribution")
+        plt.bar_label(bar)
+        plt.savefig(PLOT_PATH+'/removed_true_positive.png', width=0.3, bbox_inches='tight')
+
+
+        remaining_true_positive_secrets_names = []
+        remaining_true_positive_secrets_content = []
+        for pattern_name, content in remaining_true_positive_secrets_dict.items():
+            remaining_true_positive_secrets_names.append(pattern_name)
+            remaining_true_positive_secrets_content.append(len(content))
+
+        plt.figure(figsize=(30, 20))
+        bar = plt.bar(remaining_true_positive_secrets_names, remaining_true_positive_secrets_content)
+        plt.title("Remaining True Positive pattern distribution")
+        plt.bar_label(bar)
+        plt.savefig(PLOT_PATH+'/remaining_true_positive.png', width=0.3, bbox_inches='tight')
 
 
 if __name__ == '__main__':

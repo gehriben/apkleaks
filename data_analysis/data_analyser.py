@@ -78,7 +78,7 @@ class DataAnalyser():
 
         print(f"Found {count} False Positve Ip Addresses")
     
-    def compare_false_positivs(self, db_firmware_droid, db_advanced_apkleaks):
+    def compare_false_positives(self, db_firmware_droid, db_advanced_apkleaks):
         remaining_false_positive_secrets_dict = dict()
         removed_false_positive_secrets_dict = dict()
 
@@ -102,7 +102,7 @@ class DataAnalyser():
                     removed_false_positive_secrets_dict[firmwaredroid_collection] = removed_false_positive_secrets
                 else:
                     firmwaredroid_entrys = self._db_manager.get_all_collection_entries(db_firmware_droid, firmwaredroid_collection)
-                    removed_false_positive_secrets = self.get_false_positives(firmwaredroid_entrys)
+                    removed_false_positive_secrets = self.get_removed_secrets(firmwaredroid_entrys)
 
                     if removed_false_positive_secrets:
                         self._db_manager.store_removed_false_positives(removed_false_positive_secrets)
@@ -112,31 +112,71 @@ class DataAnalyser():
 
         return remaining_false_positive_secrets_dict, removed_false_positive_secrets_dict
     
-    def get_false_positives(self, firmwaredroid_entrys):
-        removed_false_positive_secrets = list()
+    def get_removed_secrets(self, firmwaredroid_entrys, false_positives=True):
+        removed_secrets = list()
         for firmwaredroid_entry in firmwaredroid_entrys:
-            if firmwaredroid_entry["falsePositive"]:
-                removed_false_positive_secrets.append(firmwaredroid_entry)
+            if firmwaredroid_entry["falsePositive"] == false_positives:
+                removed_secrets.append(firmwaredroid_entry)
         
-        return removed_false_positive_secrets
+        return removed_secrets
 
-    def compare_secret_entries(self, firmwaredroid_entrys, advanced_apkleaks_entrys):
-        remaining_false_positive_secrets = list()
-        removed_false_positive_secrets = list()
+    def compare_secret_entries(self, firmwaredroid_entrys, advanced_apkleaks_entrys, compare_false_positives=True):
+        remaining_secrets = list()
+        removed_secrets = list()
 
+        print(firmwaredroid_entrys)
         for firmwaredroid_entry in firmwaredroid_entrys:
-            if firmwaredroid_entry["falsePositive"]:
+            print(firmwaredroid_entry["secret"])
+            if firmwaredroid_entry["falsePositive"] == compare_false_positives:
                 still_existing = False
                 for advanced_apkleaks_entry in advanced_apkleaks_entrys:
-                    if firmwaredroid_entry["secret"] == advanced_apkleaks_entry["secret"]:
-                        remaining_false_positive_secrets.append(advanced_apkleaks_entry)
+                    print(" --> %s" % advanced_apkleaks_entry["secret"])
+                    if firmwaredroid_entry["appname"] == advanced_apkleaks_entry["appname"] and firmwaredroid_entry["secret"] == advanced_apkleaks_entry["secret"] :
+                        remaining_secrets.append(advanced_apkleaks_entry)
                         still_existing = True
                         break
                 
                 if not still_existing:
-                    removed_false_positive_secrets.append(firmwaredroid_entry)
+                    removed_secrets.append(firmwaredroid_entry)
         
-        return remaining_false_positive_secrets, removed_false_positive_secrets
+        return remaining_secrets, removed_secrets
+
+    def compare_true_positives(self, db_firmware_droid, db_advanced_apkleaks):
+        remaining_true_positive_secrets_dict = dict()
+        removed_true_positive_secrets_dict = dict()
+
+        firmwaredroid_collections = self._db_manager.get_collection_names(db_firmware_droid)
+        advanced_apkleaks_collections = self._db_manager.get_collection_names(db_advanced_apkleaks)
+        
+        for firmwaredroid_collection in firmwaredroid_collections:
+            if firmwaredroid_collection != "_Applist":
+                if firmwaredroid_collection in advanced_apkleaks_collections:
+                    firmwaredroid_entrys = self._db_manager.get_all_collection_entries(db_firmware_droid, firmwaredroid_collection)
+                    advanced_apkleaks_entrys = self._db_manager.get_all_collection_entries(db_advanced_apkleaks, firmwaredroid_collection)
+                    
+                    print(f"--- {firmwaredroid_collection} ---")
+                    remaining_true_positive_secrets, removed_true_positive_secrets = self.compare_secret_entries(list(firmwaredroid_entrys), list(advanced_apkleaks_entrys), compare_false_positives=False)
+                    
+                    print(remaining_true_positive_secrets)
+
+                    if remaining_true_positive_secrets:
+                        self._db_manager.store_remaining_true_positives(remaining_true_positive_secrets)
+                    if removed_true_positive_secrets:
+                        self._db_manager.store_removed_true_positives(removed_true_positive_secrets)
+
+                    remaining_true_positive_secrets_dict[firmwaredroid_collection] = remaining_true_positive_secrets
+                    removed_true_positive_secrets_dict[firmwaredroid_collection] = removed_true_positive_secrets
+                else:
+                    firmwaredroid_entrys = self._db_manager.get_all_collection_entries(db_firmware_droid, firmwaredroid_collection)
+                    removed_true_positive_secrets = self.get_removed_secrets(firmwaredroid_entrys, false_positives=False)
+
+                    if removed_true_positive_secrets:
+                        self._db_manager.store_removed_false_positives(removed_true_positive_secrets)
+
+                    removed_true_positive_secrets_dict[firmwaredroid_collection] = removed_true_positive_secrets
+
+        return remaining_true_positive_secrets_dict, removed_true_positive_secrets_dict
+
                 
 
                         

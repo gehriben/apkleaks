@@ -47,7 +47,7 @@ class MongoDB(object):
 
     def get_all_collection_entries(self, db, collection):
         collection = db[collection]
-        result = collection.find({})
+        result = collection.find({}, {'_id':0})
 
         return result
 
@@ -58,3 +58,11 @@ class MongoDB(object):
     def store_removed_false_positives(self, removed_false_positives):
         collection = self.db_name_data_analisation["removed_false_positives"]
         collection.insert_many(removed_false_positives)
+
+    def store_remaining_true_positives(self, remaining_true_positives):
+        collection = self.db_name_data_analisation["remaining_true_positves"]
+        collection.insert_many(remaining_true_positives)
+    
+    def store_removed_true_positives(self, removed_true_positives):
+        collection = self.db_name_data_analisation["removed_true_positives"]
+        collection.insert_many(removed_true_positives)
