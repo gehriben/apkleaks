@@ -26,7 +26,7 @@ class API():
             progressbar.update(1)
 
     def get_apk(self, app_id):
-        result = requests.get(self.base_url + "/v1/android_app/download/" + app_id, cookies=self.cookie, verify=False)
+        result = requests.get(self.base_url + "/v1/android_app/download/" + str(app_id), cookies=self.cookie, verify=False)
         return result.content
     
     def store_apk(self, appname, apk):
