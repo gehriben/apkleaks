@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from click import progressbar
 from pymongo import MongoClient
 from tqdm import tqdm
@@ -23,7 +25,9 @@ EXCLUDED_PATTERNS = [
 
 class FirmwareDroidAnalyser():
     def __init__(self):
-        self.client = MongoClient("mongodb://mongodbreader1:j8m88frSYjiKtdmZGP8BY6ZPdvQJyfpF@160.85.255.220:27017/?directConnection=true&authSource=FirmwareDroid")
+        load_dotenv()
+
+        self.client = MongoClient(os.getenv('FIRMWAREDROID_DB_STRING'))
         self.db = self.client["FirmwareDroid"]
         self._firmwaredroid_data_merger = FirmwaredroidDataMerger()
         # self.output = "data.txt"

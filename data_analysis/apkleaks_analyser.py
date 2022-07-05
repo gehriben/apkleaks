@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-COLLECTION_NAME = "apkleaks_results"
+COLLECTION_NAME = "apkleaks_results_v3"
 
 class ApkleaksAnalyser():
     def __init__(self):
