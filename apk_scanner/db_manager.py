@@ -69,6 +69,6 @@ class MongoDB(object):
     
     def get_all_app_informations(self):
         collection = self.db_name_firmwaredroid["_Applist"]
-        result = collection.find({ 'app_id': 1, 'appname': 1, '_id':0})
+        result = collection.find({}, { 'app_id': 1, 'appname': 1, '_id':0})
 
         return result

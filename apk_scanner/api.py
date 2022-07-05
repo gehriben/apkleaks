@@ -15,10 +15,10 @@ class API():
         self.mongodb = MongoDB()
 
     def get_all_apks(self):
-        app_informations = self.mongodb.get_all_app_informations()
-
-        progressbar = tqdm(total=len(list(app_informations)))
+        app_informations = list(self.mongodb.get_all_app_informations())
+        
         print("--- Fetches and stores required apks ---")
+        progressbar = tqdm(total=len(app_informations))
         for app_info in app_informations:
             progressbar.set_description("Fetch and store %s" % app_info['appname'])    
             apk = self.get_apk(app_info['app_id'])
