@@ -34,7 +34,7 @@ class FirmwaredroidDataMerger():
         old_results = appnames_with_apkleaks_results_dict[apkname]
 
         for new_entry in apkleaks_results:
-            for old_entry in old_results:
+            for old_entry in old_results["results"]:
                 if new_entry['name'] == old_entry['name']:
                     merged_entry_list = list()
                     # Add results from the existing app
