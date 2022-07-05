@@ -7,7 +7,7 @@ class MongoDB(object):
         self.client = MongoClient("mongodb", 27017, username="root", password="rootpassword")
         self.db_apk_scanner = self.client["apk_scanner"]
         self.db_name_advanced_apkleaks = self.client["apk_scanner_secrets"]
-        self.db_name_firmwaredroid = self.client["firmwaredroid_secrets"]
+        self.db_name_firmwaredroid = self.client["firmwaredroid_secrets_top_apks"]
         self.db_name_data_analisation = self.client["data_analisation"]
 
     def store_scan(self, scans):
