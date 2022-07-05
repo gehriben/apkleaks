@@ -51,9 +51,9 @@ class ApkleaksAnalyser():
         collection = db[patternname]
         collection.insert_one(secrets) 
 
-    def store_appnames(self, db, appname, secret_size):
+    def store_appnames(self, db, app_id, appname, secret_size):
         collection = db['_Applist']
-        collection.insert_one({"appname": appname, "secret_size":secret_size}) 
+        collection.insert_one({"app_id":app_id, "appname": appname, "secret_size":secret_size}) 
 
     def get_data(self):
         collection = self.db_apk_scanner[COLLECTION_NAME]

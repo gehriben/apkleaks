@@ -17,12 +17,12 @@ class DataAnalyser():
         # firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_apkleaks_information_with_appnames()
         # apkleaks_apks = self._apkleaks_analyser.get_apk_names()
         
-        # firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_top_most_apk_results()
+        firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_top_most_apk_results()
 
 
         # self.compare_and_process_apks(apkleaks_apks, firmwaredroid_apkleaks_data)
+        self.process_top_apks(firmwaredroid_apkleaks_data)
         self.evaluate_fp_in_ip_addresses(self._db_manager.db_name_firmwaredroid)
-        # self.process_top_apks(firmwaredroid_apkleaks_data)
 
     def compare_and_process_apks(self, apkleaks_apks, firmwaredroid_apkleaks_data):
         stored_entries_counter = 0
@@ -30,7 +30,7 @@ class DataAnalyser():
         for apkleaks_apk in apkleaks_apks:
             if apkleaks_apk+'.apk' in firmwaredroid_apkleaks_data:
                 results = firmwaredroid_apkleaks_data[apkleaks_apk+'.apk']
-                self._apkleaks_analyser.store_appnames(self._apkleaks_analyser.db_firmwaredroid_data, apkleaks_apk, results['secret_size'])
+                self._apkleaks_analyser.store_appnames(self._apkleaks_analyser.db_firmwaredroid_data, results["app_id"], apkleaks_apk, results['secret_size'])
                 stored_entries_counter += self.store_secrets_of_apks(results["results"], apkleaks_apk, self._apkleaks_analyser.db_firmwaredroid_data)
             else:
                 not_collected_apks += 1
@@ -40,7 +40,7 @@ class DataAnalyser():
     def process_top_apks(self, firmwaredroid_apkleaks_data):
         stored_entries_counter = 0
         for appname, results in firmwaredroid_apkleaks_data.items():
-            self._apkleaks_analyser.store_appnames(self._apkleaks_analyser.firmwaredroid_secrets_top_apks, appname, results['secret_size'])
+            self._apkleaks_analyser.store_appnames(self._apkleaks_analyser.firmwaredroid_secrets_top_apks, results["app_id"], appname, results['secret_size'])
             stored_entries_counter += self.store_secrets_of_apks(results["results"], appname, self._apkleaks_analyser.firmwaredroid_secrets_top_apks)
 
         print(f"Stored {stored_entries_counter} secrets from FirmwareDroid with the top most APKs!")

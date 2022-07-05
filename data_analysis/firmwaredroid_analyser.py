@@ -90,16 +90,17 @@ class FirmwareDroidAnalyser():
         print("--- Calculate secret amount for each result in FirmwareDroid DB ---")
         apkleaks_results_with_result_length = list()
         progressbar = tqdm(total=len(appnames_with_apkleaks_results_dict.keys()))
-        for appname, apkleaks_results in appnames_with_apkleaks_results_dict.items():
+        for appname, apk_data in appnames_with_apkleaks_results_dict.items():
                 progressbar.set_description("Process %s" % appname)    
 
                 apkleaks_results_dict = dict()
-
+                
                 apkleaks_results_dict["appname"] = appname
+                apkleaks_results_dict["app_id"] = apk_data["app_id"]
                 apkleaks_results_dict["secret_size"] = 0
-                apkleaks_results_dict["results"] = apkleaks_results
+                apkleaks_results_dict["results"] = apk_data["results"]
 
-                for apkleaks_result in apkleaks_results:
+                for apkleaks_result in apk_data["results"]:
                     if apkleaks_result["name"] != "LinkFinder" and apkleaks_result["name"] != "JSON_Web_Token" and apkleaks_result["name"] != "IP_Address":
                         apkleaks_results_dict["secret_size"] += len(apkleaks_result["matches"])
  
@@ -113,12 +114,13 @@ class FirmwareDroidAnalyser():
         print("--- Collect top most APKLeaks results from FirmwareDroid DB ---")
         firmwaredroid_apkleaks_data = dict()
         progressbar = tqdm(total=MAX_ELEMENTS)
-        for apkleaks_result in apkleaks_results_with_result_length[0:MAX_ELEMENTS]:
-            appname = apkleaks_result["appname"]
+        for apk_data in apkleaks_results_with_result_length[0:MAX_ELEMENTS]:
+            app_id = apk_data['app_id']
+            appname = apk_data["appname"]
 
             progressbar.set_description("Process %s" % appname)    
 
-            secrets = {'results':apkleaks_result["results"], 'secret_size': apkleaks_result["secret_size"] }
+            secrets = {'app_id':app_id , 'results':apk_data["results"], 'secret_size': apk_data["secret_size"] }
             firmwaredroid_apkleaks_data[appname] = secrets
 
             progressbar.update(1)

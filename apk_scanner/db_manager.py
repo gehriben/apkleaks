@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-COLLECTION_NAME = "apkleaks_results_v2"
+COLLECTION_NAME = "apkleaks_results_v3"
 
 class MongoDB(object):
     def __init__(self):
@@ -66,3 +66,9 @@ class MongoDB(object):
     def store_removed_true_positives(self, removed_true_positives):
         collection = self.db_name_data_analisation["removed_true_positives"]
         collection.insert_many(removed_true_positives)
+    
+    def get_all_app_informations(self):
+        collection = self.db_name_firmwaredroid["_Applist"]
+        result = collection.find({ 'app_id': 1, 'appname': 1, '_id':0})
+
+        return result

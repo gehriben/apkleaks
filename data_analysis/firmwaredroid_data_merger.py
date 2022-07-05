@@ -10,6 +10,7 @@ class FirmwaredroidDataMerger():
         progressbar = tqdm(total=max_output_limit)
         for entry in apkleaks_results_with_appnames:
             if entry["android_app"]:
+                app_id = entry['android_app'][0]['_id']
                 apkname = entry['android_app'][0]['filename']
                 apkleaks_results = entry['results']['results']
 
@@ -17,11 +18,11 @@ class FirmwaredroidDataMerger():
                     progressbar.set_description("Merging %s" % apkname)
 
                     merged_results = self.merge_apkleaks_results(appnames_with_apkleaks_results_dict, apkname, apkleaks_results)
-                    appnames_with_apkleaks_results_dict[apkname] = merged_results
+                    appnames_with_apkleaks_results_dict[apkname] = {'app_id': app_id, 'results': merged_results }
                 else:
                     progressbar.set_description("Adding %s" % apkname)
 
-                    appnames_with_apkleaks_results_dict[apkname] = apkleaks_results
+                    appnames_with_apkleaks_results_dict[apkname] = {'app_id': app_id, 'results': apkleaks_results }
 
             progressbar.update(1)
         

@@ -5,6 +5,7 @@ import shutil
 
 from apkleaks.apkleaks import APKLeaks
 from apk_scanner.file_reader import File_Reader
+from apk_scanner.api import API
 from apk_scanner.db_manager import MongoDB
 
 APK_PATH = '../apks/apk_files'
@@ -18,9 +19,13 @@ WIPE_SOURCES = True
 class Scan():
     def __init__(self):
         self._file_reader = File_Reader()
+        self._api = API()
         self._db_manager = MongoDB()
 
     def start_scan(self):
+        # Get all apks and stores them
+        self._api.get_all_apks()
+
         apk_file_list = self._file_reader.read_files(APK_PATH)
         print("Scanner found %s APKs. Start scanning!" % (len(apk_file_list)))
         count_files = 0
