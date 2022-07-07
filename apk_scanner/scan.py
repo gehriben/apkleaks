@@ -31,17 +31,20 @@ class Scan():
         count_files = 0
         for filename in apk_file_list:
             if not self._db_manager.get_scan_by_appname(filename.replace('.apk', '')):
-                print("*** SCANNING "+filename+" ***")
-                apk_path, result_path, verbose_path = self.path_builder(filename)
-                apkleaks = self.init_apkleaks(apk_path, result_path, verbose_path)
-                result_json = self.run_apkleaks(apkleaks)
-                output_json = self.parse_output_json(filename, result_json)
-                self._db_manager.store_scan(output_json)
-                print("  ---> Results saved in MongoDB!")
+                try:
+                    print("*** SCANNING "+filename+" ***")
+                    apk_path, result_path, verbose_path = self.path_builder(filename)
+                    apkleaks = self.init_apkleaks(apk_path, result_path, verbose_path)
+                    result_json = self.run_apkleaks(apkleaks)
+                    output_json = self.parse_output_json(filename, result_json)
+                    self._db_manager.store_scan(output_json)
+                    print("  ---> Results saved in MongoDB!")
 
-                count_files += 1
-                if count_files >= MAX_ITERATIONS and MAX_ITERATIONS != 0:
-                    break
+                    count_files += 1
+                    if count_files >= MAX_ITERATIONS and MAX_ITERATIONS != 0:
+                        break
+                except:
+                    print("Error in apk scan! Skipping this apk!")
             else:
                 print("App with name %s already in database. Skipping!" % (filename.replace('.apk', '')))
 
@@ -89,8 +92,6 @@ class Scan():
             apkleaks.scanning()
 
             results_json = apkleaks.out_json
-        except:
-            print("Error in apk scan! Skipping this apk!")
         finally:
             apkleaks.cleanup()
 
