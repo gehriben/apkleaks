@@ -44,4 +44,4 @@ USER ${ubuntu}
 
 WORKDIR /app
 ENTRYPOINT ["python3", "cli.py"]
-CMD ["do-nothing"]
+CMD ["start-apk-scan"]
