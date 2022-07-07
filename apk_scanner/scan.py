@@ -24,7 +24,7 @@ class Scan():
 
     def start_scan(self):
         # Get all apks and stores them
-        self._api.get_all_apks()
+        # self._api.get_all_apks()
 
         apk_file_list = self._file_reader.read_files(APK_PATH)
         print("Scanner found %s APKs. Start scanning!" % (len(apk_file_list)))
@@ -89,6 +89,8 @@ class Scan():
             apkleaks.scanning()
 
             results_json = apkleaks.out_json
+        except:
+            print("Error in apk scan! Skipping this apk!")
         finally:
             apkleaks.cleanup()
 
