@@ -32,3 +32,10 @@ class API():
     def store_apk(self, appname, apk):
         with open(APK_PATH+'/'+appname, 'wb') as f:
             f.write(apk)
+    
+    def is_download_possible(self, app_id):
+        result = requests.get(self.base_url + "/v1/android_app/download/" + str(app_id), cookies=self.cookie, verify=False)
+        if result.status_code == 200:
+            return True
+        else:
+            return False

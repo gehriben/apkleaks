@@ -5,9 +5,11 @@ from pymongo import MongoClient
 from tqdm import tqdm
 
 from data_analysis.firmwaredroid_data_merger import FirmwaredroidDataMerger
+from apk_scanner.api import API
 
 MAX_OUTPUT_LIMIT = 1000000
 MAX_ELEMENTS = 100
+OUTPUT_PATH = '../apks'
 
 EXCLUDED_PATTERNS = [
     "LinkFinder",
@@ -30,6 +32,7 @@ class FirmwareDroidAnalyser():
         self.client = MongoClient(os.getenv('FIRMWAREDROID_DB_STRING'))
         self.db = self.client["FirmwareDroid"]
         self._firmwaredroid_data_merger = FirmwaredroidDataMerger()
+        self._firmware_droid_api = API()
         # self.output = "data.txt"
         # self.fileout = open(self.output, "%s" % ("w"))
 
@@ -118,16 +121,28 @@ class FirmwareDroidAnalyser():
         print("--- Collect top most APKLeaks results from FirmwareDroid DB ---")
         firmwaredroid_apkleaks_data = dict()
         progressbar = tqdm(total=MAX_ELEMENTS)
-        for apk_data in apkleaks_results_with_result_length[0:MAX_ELEMENTS]:
-            app_id = apk_data['app_id']
-            appname = apk_data["appname"]
 
-            progressbar.set_description("Process %s" % appname)    
+        downloaded_apks = 0
+        for apk_data in apkleaks_results_with_result_length:
+            if self._firmware_droid_api.is_download_possible():
+                app_id = apk_data['app_id']
+                appname = apk_data["appname"]
 
-            secrets = {'app_id':app_id , 'results':apk_data["results"], 'secret_size': apk_data["secret_size"] }
-            firmwaredroid_apkleaks_data[appname] = secrets
+                progressbar.set_description("Process %s" % appname)    
 
-            progressbar.update(1)
+                secrets = {'app_id':app_id , 'results':apk_data["results"], 'secret_size': apk_data["secret_size"] }
+                firmwaredroid_apkleaks_data[appname] = secrets
+
+                progressbar.update(1)
+                downloaded_apks += 1
+            else:
+                f = open(OUTPUT_PATH+"/not_downloadable_apks.txt", "w")
+                f.write(appname)
+                f.close()
+                print(f"Download for {appname} not possible! Skipping!")
+            
+            if downloaded_apks >= MAX_ELEMENTS:
+                break
         
         print(f"  --> Collected secrets from {len(firmwaredroid_apkleaks_data.keys())}/{MAX_ELEMENTS} apks")
         return firmwaredroid_apkleaks_data
