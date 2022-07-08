@@ -124,7 +124,7 @@ class FirmwareDroidAnalyser():
 
         downloaded_apks = 0
         for apk_data in apkleaks_results_with_result_length:
-            if self._firmware_droid_api.is_download_possible():
+            if self._firmware_droid_api.is_download_possible(apk_data['app_id']):
                 app_id = apk_data['app_id']
                 appname = apk_data["appname"]
 
