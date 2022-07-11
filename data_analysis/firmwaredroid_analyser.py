@@ -139,7 +139,7 @@ class FirmwareDroidAnalyser():
                 f = open(OUTPUT_PATH+"/not_downloadable_apks.txt", "w")
                 f.write(str(apk_data["appname"]))
                 f.close()
-                print("Download for "+{str(apk_data["appname"])}+" not possible! Skipping!")
+                print("Download for "+str(apk_data["appname"])+" not possible! Skipping!")
             
             if downloaded_apks >= MAX_ELEMENTS:
                 break
