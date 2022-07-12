@@ -136,12 +136,12 @@ class FirmwareDroidAnalyser():
                 progressbar.update(1)
                 downloaded_apks += 1
             else:
-                f = open(OUTPUT_PATH+"/not_downloadable_apks.txt", "w")
+                f = open(OUTPUT_PATH+"/not_downloadable_apks.txt", "a")
                 f.write(str(apk_data["appname"]))
                 f.close()
                 print("Download for "+str(apk_data["appname"])+" not possible! Skipping!")
             
-            if downloaded_apks >= MAX_ELEMENTS:
+            if downloaded_apks > MAX_ELEMENTS:
                 break
         
         print(f"  --> Collected secrets from {len(firmwaredroid_apkleaks_data.keys())}/{MAX_ELEMENTS} apks")
