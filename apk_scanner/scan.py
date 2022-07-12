@@ -14,7 +14,7 @@ APKLEAKS_VERBOSE_PATH = '../apks/sources'
 
 MAX_ITERATIONS = 0
 VERBOSE = True
-WIPE_SOURCES = True
+WIPE_SOURCES = False
 
 class Scan():
     def __init__(self):

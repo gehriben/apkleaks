@@ -1,24 +1,16 @@
-import os
-
 from pathlib import Path
 
 from apkleaks.patterns.pattern import Pattern
 from apkleaks.scoring.normal_score_type import NormalScore
 from apkleaks.scoring.additive_score_type import AdditiveScore
 
-NAME = "Amazon_AWS_S3_Bucket"
-REGEXES = [
-		"//s3-[a-z0-9-]+\\.amazonaws\\.com/[a-z0-9._-]+",
-		"//s3\\.amazonaws\\.com/[a-z0-9._-]+",
-		"[a-z0-9.-]+\\.s3-[a-z0-9-]\\.amazonaws\\.com",
-		"[a-z0-9.-]+\\.s3-website[.-](eu|ap|us|ca|sa|cn)",
-		"[a-z0-9.-]+\\.s3\\.amazonaws\\.com",
-		"amzn\\.mws\\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-	]
+NAME = "Password_in_URL"
+REGEXES = ["[a-zA-Z]{3,10}://[^/\\s:@]{3,20}:[^/\\s:@]{3,20}@.{1,100}[\"'\\s]"]
 
-ENTROPY_THRESHOLD = 3.0
+ENTROPY_THRESHOLD = 3.5
 
-class AwsS3BucketPattern(Pattern):
+
+class PasswordInUrlPattern(Pattern):
     def __init__(self):
         self.name = NAME
         self.regexes = REGEXES

@@ -218,13 +218,14 @@ class APKLeaks:
 				print(stdout)
 				self.fileout.write("%s" % (stdout + "\n" if self.json is False else ""))
 			self.fileout.write("%s" % ("\n" if self.json is False else ""))
-
+		if 'possible_secrets' in pattern.results:
 			self.out_json["results"].append(pattern.json())	
-			"""print("")
-			stdout = ("[%s]" % ('JSON_Printout'))
-			util.writeln("\n" + stdout, col.OKGREEN)
-			print(stdout)
-			print(self.out_json)"""
+		
+		"""print("")
+		stdout = ("[%s]" % ('JSON_Printout'))
+		util.writeln("\n" + stdout, col.OKGREEN)
+		print(stdout)
+		print(self.out_json)"""
 	
 	def is_pattern_valid(self, filename, filepath):
 		for excluded_pattern_filename in EXCLUDED_PATTERN_FILENAMES:

@@ -12,17 +12,17 @@ class DataAnalyser():
         self._db_manager = MongoDB()
 
     def start_analysis(self):
-        # self._apkleaks_analyser.extract_secrets()
+        self._apkleaks_analyser.extract_secrets()
         # names = self._firmwaredroid_analyser.get_apk_names()
         # firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_apkleaks_information_with_appnames()
         # apkleaks_apks = self._apkleaks_analyser.get_apk_names()
         
-        firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_top_most_apk_results()
+        #firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_top_most_apk_results()
 
 
         # self.compare_and_process_apks(apkleaks_apks, firmwaredroid_apkleaks_data)
-        self.process_top_apks(firmwaredroid_apkleaks_data)
-        self.evaluate_fp_in_ip_addresses(self._db_manager.db_name_firmwaredroid)
+        # self.process_top_apks(firmwaredroid_apkleaks_data)
+        # self.evaluate_fp_in_ip_addresses(self._db_manager.db_name_firmwaredroid)
 
     def compare_and_process_apks(self, apkleaks_apks, firmwaredroid_apkleaks_data):
         stored_entries_counter = 0
@@ -93,6 +93,7 @@ class DataAnalyser():
                     
                     remaining_false_positive_secrets, removed_false_positive_secrets = self.compare_secret_entries(firmwaredroid_entrys, advanced_apkleaks_entrys)
 
+
                     if remaining_false_positive_secrets:
                         self._db_manager.store_remaining_false_positives(remaining_false_positive_secrets)
                     if removed_false_positive_secrets:
@@ -121,16 +122,16 @@ class DataAnalyser():
         return removed_secrets
 
     def compare_secret_entries(self, firmwaredroid_entrys, advanced_apkleaks_entrys, compare_false_positives=True):
+        firmwaredroid_entrys = list(firmwaredroid_entrys)
+        advanced_apkleaks_entrys = list(advanced_apkleaks_entrys)
+        
         remaining_secrets = list()
         removed_secrets = list()
 
-        print(firmwaredroid_entrys)
         for firmwaredroid_entry in firmwaredroid_entrys:
-            print(firmwaredroid_entry["secret"])
             if firmwaredroid_entry["falsePositive"] == compare_false_positives:
                 still_existing = False
                 for advanced_apkleaks_entry in advanced_apkleaks_entrys:
-                    print(" --> %s" % advanced_apkleaks_entry["secret"])
                     if firmwaredroid_entry["appname"] == advanced_apkleaks_entry["appname"] and firmwaredroid_entry["secret"] == advanced_apkleaks_entry["secret"] :
                         remaining_secrets.append(advanced_apkleaks_entry)
                         still_existing = True
