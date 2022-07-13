@@ -1,4 +1,5 @@
 import requests
+import os
 
 from tqdm import tqdm
 
@@ -20,10 +21,13 @@ class API():
         print("--- Fetches and stores required apks ---")
         progressbar = tqdm(total=len(app_informations))
         for app_info in app_informations:
-            progressbar.set_description("Fetch and store %s" % app_info['appname'])    
-            apk = self.get_apk(app_info['app_id'])
-            self.store_apk(app_info['appname'], apk)
-            progressbar.update(1)
+            if not os.path.exists(APK_PATH+'/'+app_info['appname']): 
+                progressbar.set_description("Fetch and store %s" % app_info['appname'])    
+                apk = self.get_apk(app_info['app_id'])
+                self.store_apk(app_info['appname'], apk)
+                progressbar.update(1)
+            else:
+                print("APK already downloaded! Skipping!")
 
     def get_apk(self, app_id):
         result = requests.get(self.base_url + "/v1/android_app/download/" + str(app_id), cookies=self.cookie, verify=False)
