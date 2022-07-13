@@ -27,7 +27,7 @@ class API():
                 self.store_apk(app_info['appname'], apk)
                 progressbar.update(1)
             else:
-                print("APK already downloaded! Skipping!")
+                print(app_info['appname']+" already downloaded! Skipping!")
 
     def get_apk(self, app_id):
         result = requests.get(self.base_url + "/v1/android_app/download/" + str(app_id), cookies=self.cookie, verify=False)
