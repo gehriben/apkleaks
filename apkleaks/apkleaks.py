@@ -235,6 +235,9 @@ class APKLeaks:
 		for excluded_pattern_filepaths in EXCLUDED_PATTERN_FILEPATHS:
 			if filepath.endswith(excluded_pattern_filepaths):
 				return False
+		
+		"""if filename != 'password_in_url_pattern.py' and filename != 'aws_s3_bucket_pattern.py':
+			return False"""
 
 		return True
 

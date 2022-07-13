@@ -26,7 +26,7 @@ class PatternMatcher():
         for fp, _, files in os.walk(path):
             for fn in files:
                 filepath = os.path.join(fp, fn)
-                with open(filepath, errors='ignore') as handle:
+                with open(filepath) as handle:
                     progressbar.set_description("Pattern_Matcher (%s): processing %s" % (pattern.name, filepath))
                     try:
                         linenumber = 0
@@ -34,9 +34,10 @@ class PatternMatcher():
                             self.regex_matcher(found_matches, pattern, line, linenumber, filepath)
                             linenumber += 1
                     except Exception:
-                        print(traceback.format_exc())
+                        pass
+                        # print(traceback.format_exc())
                     
-                    progressbar.update(1)
+                progressbar.update(1)
 
         return found_matches
 
