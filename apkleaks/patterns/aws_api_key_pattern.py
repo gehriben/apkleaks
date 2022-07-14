@@ -4,7 +4,7 @@ from pathlib import Path
 
 from apkleaks.patterns.pattern import Pattern
 from apkleaks.scoring.normal_score_type import NormalScore
-from apkleaks.scoring.additive_score_type import AdditiveScore
+from apkleaks.scoring.additional_score_type import AdditionalScore
 
 NAME = "AWS_API_Key"
 REGEXES = ["AKIA[0-9A-Z]{16}"]

@@ -178,7 +178,7 @@ class APKLeaks:
 		scoring.do_scoring(pattern)
 
 		secret_filter = SecretFilter()
-		secret_filter.filter_secrets(RESTRICTIONS.MEDIUM, pattern)
+		secret_filter.filter_secrets(RESTRICTIONS.HIGH, pattern)
 		
 		# self.output_results(pattern)
 		# print(f"--- {pattern.name} ---")
@@ -192,7 +192,7 @@ class APKLeaks:
 		scoring.do_scoring(_key_extractor_pattern)
 
 		secret_filter = SecretFilter()
-		secret_filter.filter_secrets(RESTRICTIONS.MEDIUM, _key_extractor_pattern)
+		secret_filter.filter_secrets(RESTRICTIONS.HIGH, _key_extractor_pattern)
 		
 		# self.output_results(_key_extractor_pattern)
 
@@ -204,7 +204,7 @@ class APKLeaks:
 		scoring.do_scoring(_credential_extractor_pattern)
 
 		secret_filter = SecretFilter()
-		secret_filter.filter_secrets(RESTRICTIONS.MEDIUM, _credential_extractor_pattern)
+		secret_filter.filter_secrets(RESTRICTIONS.HIGH, _credential_extractor_pattern)
 		
 		# self.output_results(_credential_extractor_pattern)
 

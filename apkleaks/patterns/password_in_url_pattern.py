@@ -2,7 +2,7 @@ from pathlib import Path
 
 from apkleaks.patterns.pattern import Pattern
 from apkleaks.scoring.normal_score_type import NormalScore
-from apkleaks.scoring.additive_score_type import AdditiveScore
+from apkleaks.scoring.additional_score_type import AdditionalScore
 
 NAME = "Password_in_URL"
 REGEXES = ["[a-zA-Z]{3,10}://[^/\\s:@]{3,20}:[^/\\s:@]{3,20}@.{1,100}[\"'\\s]"]

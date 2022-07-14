@@ -4,7 +4,7 @@ from pathlib import Path
 
 from apkleaks.patterns.pattern import Pattern
 from apkleaks.scoring.normal_score_type import NormalScore
-from apkleaks.scoring.additive_score_type import AdditiveScore
+from apkleaks.scoring.additional_score_type import AdditionalScore
 
 NAME = "Facebook_ClientID"
 REGEXES = ["[f|F][a|A][c|C][e|E][b|B][o|O][o|O][k|K](.{0,20})?['\"][0-9]{13,17}"]

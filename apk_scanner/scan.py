@@ -2,6 +2,7 @@ import argparse
 import os
 import json
 import shutil
+import traceback
 
 from apkleaks.apkleaks import APKLeaks
 from apk_scanner.file_reader import File_Reader
@@ -24,7 +25,7 @@ class Scan():
 
     def start_scan(self):
         # Get all apks and stores them
-        self._api.get_all_apks()
+        # self._api.get_all_apks()
 
         apk_file_list = self._file_reader.read_files(APK_PATH)
         print("Scanner found %s APKs. Start scanning!" % (len(apk_file_list)))
@@ -45,6 +46,7 @@ class Scan():
                         break
                 except:
                     print("Error in apk scan! Skipping this apk!")
+                    print(traceback.format_exc())
             else:
                 print("App with name %s already in database. Skipping!" % (filename.replace('.apk', '')))
 

@@ -155,10 +155,7 @@ class DataAnalyser():
                     firmwaredroid_entrys = self._db_manager.get_all_collection_entries(db_firmware_droid, firmwaredroid_collection)
                     advanced_apkleaks_entrys = self._db_manager.get_all_collection_entries(db_advanced_apkleaks, firmwaredroid_collection)
                     
-                    print(f"--- {firmwaredroid_collection} ---")
                     remaining_true_positive_secrets, removed_true_positive_secrets = self.compare_secret_entries(list(firmwaredroid_entrys), list(advanced_apkleaks_entrys), compare_false_positives=False)
-                    
-                    print(remaining_true_positive_secrets)
 
                     if remaining_true_positive_secrets:
                         self._db_manager.store_remaining_true_positives(remaining_true_positive_secrets)

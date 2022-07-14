@@ -36,16 +36,17 @@ class ApkleaksAnalyser():
             secret_counter_per_app = 0
             for result in entry["packages"]["results"]:
                 for patternname, value in result.items():
-                    for secret in value["valid_secrets"]:
-                        json_object = {
-                            'appname': entry['appname'] if entry['appname'].endswith(".apk") else entry['appname']+".apk",
-                            'secret': secret['secret'],
-                            'score': secret['score']
-                        }
+                    if 'valid_secrets' in value:
+                        for secret in value["valid_secrets"]:
+                            json_object = {
+                                'appname': entry['appname'] if entry['appname'].endswith(".apk") else entry['appname']+".apk",
+                                'secret': secret['secret'],
+                                'score': secret['score']
+                            }
 
-                        self.store_data(self.db_apk_scanner_secrets, patternname, json_object)
-                        secret_counter += 1
-                        secret_counter_per_app += 1
+                            self.store_data(self.db_apk_scanner_secrets, patternname, json_object)
+                            secret_counter += 1
+                            secret_counter_per_app += 1
             
             app_json_object = {
                 'appname': entry['appname'] if entry['appname'].endswith(".apk") else entry['appname']+".apk",

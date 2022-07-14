@@ -1,16 +1,18 @@
 from apkleaks.scoring.normal_score_type import NormalScore
-from apkleaks.scoring.additive_score_type import AdditiveScore
+from apkleaks.scoring.additional_score_type import AdditionalScore
 
 STANDARD_ENTROPY_SCORE = 10
 STANDARD_PASSWORD_VALIDATION_SCORE = 10
-STANDARD_IMPORTS_SCORE = 20
+STANDARD_IMPORTS_SCORE = 10
 STANDARD_KEYWORDS_SCORE = 10
 STANDARD_ENDPOINT_SCORE = 10
-STANDARD_PING_SCORE = 10
+STANDARD_PING_SCORE = 20
+STANDARD_WORD_FILTER_SCORE = 10
+STANDARD_ENDPOINT_VALIDATION_SCORE = 40
 
 class Pattern():
     def __init__(self, name, regexes, heuristic_entropy=False, heuristic_password=False, 
-                heuristic_imports=False, heuristic_keywords=False, heuristic_endpoint=False, heuristic_ping=False):
+                heuristic_imports=False, heuristic_keywords=False, heuristic_endpoint=False, heuristic_ping=False, heuristic_word_filter=False, heuristic_endpoint_validation=False):
         self.name = name
         self.regexes = regexes
         self.results = dict() # key = file path; value = found secret
@@ -20,15 +22,19 @@ class Pattern():
             'imports': heuristic_imports,
             'keywords': heuristic_keywords, 
             'endpoint': heuristic_endpoint, 
-            'ping': heuristic_ping }
+            'ping': heuristic_ping,
+            'word_filter': heuristic_word_filter,
+            'endpoint_validation': heuristic_endpoint_validation }
         self.heuristic_results = dict() # key = result string; value = heuristic_result
         self.scoring_types = {
             'entropy': NormalScore("Entropy_Score", {'entropy':STANDARD_ENTROPY_SCORE}), 
             'password_validation': NormalScore("Password_Validation_Score", {'rating':STANDARD_PASSWORD_VALIDATION_SCORE}), 
-            'imports': AdditiveScore("Import_Score", {'imports':STANDARD_IMPORTS_SCORE}),
+            'imports': AdditionalScore("Import_Score", {'imports':STANDARD_IMPORTS_SCORE}),
             'keywords': NormalScore("Keyword_Score", {'keywords':STANDARD_KEYWORDS_SCORE}), 
             'endpoint': NormalScore("Endpoint_Score", {'endpoint':STANDARD_ENDPOINT_SCORE}), 
-            'ping': NormalScore("Ping_Score", {'ping_check':STANDARD_PING_SCORE}) }
+            'ping': AdditionalScore("Ping_Score", {'ping_check':STANDARD_PING_SCORE}),
+            'word_filter': NormalScore("Word_Filter", {'word_filter':STANDARD_WORD_FILTER_SCORE}),
+            'endpoint_validation': AdditionalScore("Endpoint_Validation", {'endpoint_validation':STANDARD_ENDPOINT_VALIDATION_SCORE})}
         
         self.max_possible_score = self.calculate_max_possible_score()
 

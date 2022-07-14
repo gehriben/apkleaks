@@ -3,11 +3,15 @@ from apkleaks.heuristics.import_extractor import ImportExtractor
 from apkleaks.heuristics.keyword_searcher import KeywordSearcher
 from apkleaks.heuristics.password_validator import PasswordValidator
 from apkleaks.heuristics.ping_check import PingCheck
+from apkleaks.heuristics.word_filter import word_filter
+from apkleaks.heuristics.endpoint_validation import EndpointValidation
 
 class Heuristics():
     def __init__(self):
         self._password_validator = PasswordValidator()
         self._ping_check = PingCheck()
+        self._word_filter = word_filter
+        self._endpoint_validation = EndpointValidation()
     
     def apply_heuristics(self, pattern):
         for heuristic_name, heuristic_status in pattern.heuristics_status.items(): 
@@ -22,6 +26,10 @@ class Heuristics():
                     self.__do_password_validation(pattern)
                 elif heuristic_name == 'ping':
                     self.__do_ping_check(pattern)
+                elif heuristic_name == 'word_filter':
+                    self.__do_word_filter(pattern)
+                elif heuristic_name == 'endpoint_validation':
+                    self.__do_endpoint_validation(pattern)
 
 
     def __do_entropy_calculation(self, pattern):
@@ -134,3 +142,38 @@ class Heuristics():
 
         if ping_checks:
             pattern.results['ping_check'] = ping_checks
+    
+    def __do_word_filter(self, pattern):
+        word_filters = list()
+        for result in pattern.results['possible_secrets']:
+            words_in_secret = self._word_filter.filter_words(result['secret'])
+            if not words_in_secret:
+                word_filter_json = {
+                    'secret':result['secret'],
+                    'words':'Contains no english words'
+                }
+            else:
+                word_filter_json = {
+                    'secret':result['secret'],
+                    'words': words_in_secret
+                }
+            
+            word_filters.append(word_filter_json)
+
+        if word_filters:
+            pattern.results['word_filter'] = word_filters
+
+    def __do_endpoint_validation(self, pattern):
+        endpoint_validations = list()
+        for result in pattern.results['possible_secrets']:
+            endpoints = self._endpoint_validation.search_for_valid_endpoint(result['secret'])
+            endpoint_validation_json = {
+                'secret':result['secret'],
+                'endpoints':endpoints
+            }
+
+            
+            endpoint_validations.append(endpoint_validation_json)
+
+        if endpoint_validations:
+            pattern.results['endpoint_validation'] = endpoint_validations

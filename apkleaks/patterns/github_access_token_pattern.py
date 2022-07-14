@@ -4,7 +4,7 @@ from pathlib import Path
 
 from apkleaks.patterns.pattern import Pattern
 from apkleaks.scoring.normal_score_type import NormalScore
-from apkleaks.scoring.additive_score_type import AdditiveScore
+from apkleaks.scoring.additional_score_type import AdditionalScore
 
 NAME = "GitHub_Access_Token"
 REGEXES = ["([a-zA-Z0-9_-]*:[a-zA-Z0-9_-]+@github.com*)$"]

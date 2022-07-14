@@ -19,4 +19,4 @@ class KeyExtractorPattern(Pattern):
         self.import_regexes = IMPORT_REGEXES
         self.keyword_regexes = KEYWORD_REGEXES
 
-        Pattern.__init__(self, self.name, self.regexes, heuristic_entropy=True, heuristic_imports=True, heuristic_keywords=True)
+        Pattern.__init__(self, self.name, self.regexes, heuristic_entropy=True, heuristic_imports=True, heuristic_keywords=True, heuristic_word_filter=True)

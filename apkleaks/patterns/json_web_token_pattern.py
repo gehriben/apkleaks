@@ -4,7 +4,7 @@ from pathlib import Path
 
 from apkleaks.patterns.pattern import Pattern
 from apkleaks.scoring.normal_score_type import NormalScore
-from apkleaks.scoring.additive_score_type import AdditiveScore
+from apkleaks.scoring.additional_score_type import AdditionalScore
 
 NAME = "JSON_Web_Token"
 REGEXES = ["^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$"] #(?i)^((?=.*[a-z])(?=.*[0-9])(?:[a-z0-9_=]+\\.){2}(?:[a-z0-9_\\-\\+\/=]*))$
@@ -24,7 +24,7 @@ class JsonWebTokenPattern(Pattern):
         self.entropy_threshold = ENTROPY_THRESHOLD
         self.keyword_regexes = KEYWORD_REGEXES
 
-        Pattern.__init__(self, self.name, self.regexes, heuristic_entropy=True, heuristic_keywords=True)
+        Pattern.__init__(self, self.name, self.regexes, heuristic_entropy=True, heuristic_keywords=True, heuristic_word_filter=True)
 
         self.scoring_types['keywords'] = NormalScore("Keyword_Score", {
             KEYWORD_REGEXES[0]:KEYWORD_SCORE, 

@@ -16,9 +16,7 @@ SPECIAL_FILE_EXTENSIONS = [
 	'.so'
 ]
 
-EXCLUDED_FILES = [
-	'AndroidManifest.xml'
-]
+EXCLUDED_FILES = []
 
 EXCLUDED_DIRECTORIES = [
     'android',

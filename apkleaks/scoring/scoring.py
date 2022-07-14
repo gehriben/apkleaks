@@ -18,6 +18,10 @@ class Scoring():
                     self.__score_password_validation(pattern)
                 elif heuristic_name == 'ping' and 'ping_check' in pattern.results:
                     self.__score_ping_check(pattern)
+                elif heuristic_name == 'word_filter' and 'word_filter' in pattern.results:
+                    self.__score_word_filter(pattern)
+                elif heuristic_name == 'endpoint_validation' and 'endpoint_validation' in pattern.results:
+                    self.__score_endpoint_validation(pattern)
         
         if not pattern.is_empty():
             self.__calculate_total_score(pattern)
@@ -66,9 +70,25 @@ class Scoring():
         for ping_check in pattern.results['ping_check']:
             score = 0
             if ping_check['ping_check'] == 'Host is alive':
-                score = score = pattern.scoring_types['ping'].scores['ping_check']
+                score = pattern.scoring_types['ping'].scores['ping_check']
                 
             ping_check['score'] = score
+
+    def __score_word_filter(self, pattern):
+        for word_filter in pattern.results['word_filter']:
+            score = 0
+            if word_filter['words'] == 'Contains no english words':
+                score = pattern.scoring_types['word_filter'].scores['word_filter']
+                
+            word_filter['score'] = score
+    
+    def __score_endpoint_validation(self, pattern):
+        for endpoint_validation in pattern.results['endpoint_validation']:
+            score = 0
+            if endpoint_validation['endpoints'] != 'No valid api endpoint found!':
+                score = pattern.scoring_types['endpoint_validation'].scores['endpoint_validation']
+                
+            endpoint_validation['score'] = score
 
     def __calculate_total_score(self, pattern):
         for secret in pattern.results['possible_secrets']:
