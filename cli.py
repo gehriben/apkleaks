@@ -7,7 +7,6 @@ from isg.config import Config
 from apk_scanner.scan import Scan
 from data_analysis.data_analyser import DataAnalyser
 from data_analysis.data_visualisation import DataVisualisation
-from apkleaks.heuristics.endpoint_validation import EndpointValidation
 
 app_config = Config('config.yml', namespace='HDV')
 log_path = app_config['paths']['logs']
@@ -59,10 +58,7 @@ def idle():
     
 @apk_scanner_cli.command()
 def do_nothing():
-    # pass
-    endpoint_validation = EndpointValidation()
-    # print(endpoint_validation.search_for_valid_endpoint("AIzaSyBXffDrv5b4RWmyFylQzwoumN5VpHwPpEU"))
-    print(endpoint_validation.search_for_valid_endpoint("AIzaSyBEpEwdBClM8koty10dj7n1QtVd75BaV9U"))
+    pass
 
 cli = click.CommandCollection(sources=[apk_scanner_cli])
 

@@ -4,6 +4,8 @@ import json
 import shutil
 import traceback
 
+from pymongo.errors import DocumentTooLarge
+
 from apkleaks.apkleaks import APKLeaks
 from apk_scanner.file_reader import File_Reader
 from apk_scanner.api import API
@@ -44,6 +46,12 @@ class Scan():
                     count_files += 1
                     if count_files >= MAX_ITERATIONS and MAX_ITERATIONS != 0:
                         break
+                except DocumentTooLarge:
+                    for result in output_json["packages"]["results"]:
+                        if "Generic_Secret" in result:
+                            result["possible_secrets"] = "Document too large, deleted possible secrets!"
+                    
+                    self._db_manager.store_scan(output_json)
                 except:
                     print("Error in apk scan! Skipping this apk!")
                     print(traceback.format_exc())
