@@ -10,6 +10,7 @@ from apkleaks.apkleaks import APKLeaks
 from apk_scanner.file_reader import File_Reader
 from apk_scanner.api import API
 from apk_scanner.db_manager import MongoDB
+from apkleaks.extractors.credentials_extractor import CredentialsExtractor
 
 APK_PATH = '../apks/apk_files'
 APKLEAKS_RESULTS_PATH = '../apks/results'
@@ -47,11 +48,24 @@ class Scan():
                     if count_files >= MAX_ITERATIONS and MAX_ITERATIONS != 0:
                         break
                 except DocumentTooLarge:
+                    print("DocumentTooLarge Exception! Heuristics will not be stored!")
+
+                    reduced_output_json = dict()
+                    reduced_output_json["appname"] = output_json["appname"]
+                    reduced_output_json["packages"] = {'name': output_json["packages"]["name"], 'results': list() }
+                    reduced_output_json["error_message"] = "DocumentTooLarge Exception: Results were too large so the heuristics are not displayed!"
+
                     for result in output_json["packages"]["results"]:
-                        if "Generic_Secret" in result:
-                            result["possible_secrets"] = "Document too large, deleted possible secrets!"
+                        for key, value in result.items(): 
+                            entry_dict = {key:dict()}
+                            if 'possible_secrets' in value:
+                                entry_dict[key]["possible_secrets"] = value["possible_secrets"]
+                            if "valid_secrets" in value:
+                               entry_dict[key]["valid_secrets"] = value["valid_secrets"] 
+                            
+                            reduced_output_json["packages"]["results"].append(entry_dict)
                     
-                    self._db_manager.store_scan(output_json)
+                    self._db_manager.store_scan(reduced_output_json)
                 except:
                     print("Error in apk scan! Skipping this apk!")
                     print(traceback.format_exc())

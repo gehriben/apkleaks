@@ -8,7 +8,11 @@ class WordFilter():
     
     
     def filter_words(self, secret):
-        return self.is_word_in_secret(secret)
+        words_in_secret = self.is_word_in_secret(secret)
+        if len(words_in_secret) > 5:
+            return words_in_secret[0:5]
+        else:
+            return words_in_secret
 
     def is_word_in_secret(self, secret):
         #accepts string secret and returns list of words that exist in the secret
