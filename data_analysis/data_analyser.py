@@ -132,7 +132,7 @@ class DataAnalyser():
             if firmwaredroid_entry["falsePositive"] == compare_false_positives:
                 still_existing = False
                 for advanced_apkleaks_entry in advanced_apkleaks_entrys:
-                    if firmwaredroid_entry["appname"] == advanced_apkleaks_entry["appname"] and firmwaredroid_entry["secret"] == advanced_apkleaks_entry["secret"] :
+                    if firmwaredroid_entry["appname"] == advanced_apkleaks_entry["appname"] and advanced_apkleaks_entry["secret"] in firmwaredroid_entry["secret"]:
                         remaining_secrets.append(advanced_apkleaks_entry)
                         still_existing = True
                         break

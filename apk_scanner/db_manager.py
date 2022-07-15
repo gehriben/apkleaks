@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-COLLECTION_NAME = "apkleaks_results_v6"
+COLLECTION_NAME = "apkleaks_results_v7"
 
 class MongoDB(object):
     def __init__(self):
@@ -8,7 +8,7 @@ class MongoDB(object):
         self.db_apk_scanner = self.client["apk_scanner"]
         self.db_name_advanced_apkleaks = self.client["apk_scanner_secrets"]
         self.db_name_firmwaredroid = self.client["firmwaredroid_secrets_top_apks"]
-        self.db_name_data_analisation = self.client["data_analisation"]
+        self.db_name_data_analisation = self.client["data_analysis"]
 
     def store_scan(self, scans):
         collection = self.db_apk_scanner[COLLECTION_NAME]

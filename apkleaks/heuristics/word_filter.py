@@ -1,10 +1,12 @@
 import nltk
 from nltk.corpus import words
 
+MIN_WORD_LENGTH = 4
+
 class WordFilter():
     def __init__(self):
         nltk.download('words')
-        self.list_of_words = list(filter(lambda x: len(x)>2, words.words()))
+        self.list_of_words = list(filter(lambda x: len(x)>=MIN_WORD_LENGTH, words.words()))
     
     
     def filter_words(self, secret):
