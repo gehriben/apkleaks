@@ -95,16 +95,17 @@ class APKLeaks:
 					class_ = getattr(module, class_name)
 					patterns.append(class_())
 
-		# Custom Patterns
+		# Custom Patterns (Deactivated to increase performance)
 		"""with open(self.pattern) as regexes:
 			regex = json.load(regexes)
 			for name, pattern in regex.items():
-				if isinstance(pattern, list):
-					custom_pattern = CustomPattern(name, pattern)
-				else:
-					pattern_list = list()
-					pattern_list.append(pattern)
-					custom_pattern = CustomPattern(name, pattern_list)
+				if name != "LinkFinder":
+					if isinstance(pattern, list):
+						custom_pattern = CustomPattern(name, pattern)
+					else:
+						pattern_list = list()
+						pattern_list.append(pattern)
+						custom_pattern = CustomPattern(name, pattern_list)
 			
 				patterns.append(custom_pattern)"""
 

@@ -10,3 +10,4 @@ class CustomPattern(Pattern):
         self.regexes = regexes
 
         Pattern.__init__(self, self.name, self.regexes)
+        self.max_possible_score = Pattern.calculate_max_possible_score(self)
