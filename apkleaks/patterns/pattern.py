@@ -6,7 +6,7 @@ STANDARD_PASSWORD_VALIDATION_SCORE = 10
 STANDARD_IMPORTS_SCORE = 10
 STANDARD_KEYWORDS_SCORE = 10
 STANDARD_ENDPOINT_SCORE = 10
-STANDARD_PING_SCORE = 20
+STANDARD_PING_SCORE = 10
 STANDARD_WORD_FILTER_SCORE = 10
 STANDARD_ENDPOINT_VALIDATION_SCORE = 40
 
@@ -32,7 +32,7 @@ class Pattern():
             'imports': AdditionalScore("Import_Score", {'imports':STANDARD_IMPORTS_SCORE}),
             'keywords': NormalScore("Keyword_Score", {'keywords':STANDARD_KEYWORDS_SCORE}), 
             'endpoint': NormalScore("Endpoint_Score", {'endpoint':STANDARD_ENDPOINT_SCORE}), 
-            'ping': AdditionalScore("Ping_Score", {'ping_check':STANDARD_PING_SCORE}),
+            'ping': NormalScore("Ping_Score", {'ping_check':STANDARD_PING_SCORE}),
             'word_filter': NormalScore("Word_Filter", {'word_filter':STANDARD_WORD_FILTER_SCORE}),
             'endpoint_validation': AdditionalScore("Endpoint_Validation", {'endpoint_validation':STANDARD_ENDPOINT_VALIDATION_SCORE})}
         
@@ -62,3 +62,11 @@ class Pattern():
                 max_possible_score += object.max_score
 
         return max_possible_score
+    
+    def get_heuristic_amount(self):
+        count_heuristic = 0
+        for heuristic, is_activated in self.heuristics_status.items():
+            if is_activated and self.scoring_types[heuristic] is not (AdditionalScore):
+                count_heuristic += 1
+        
+        return count_heuristic

@@ -179,7 +179,7 @@ class APKLeaks:
 		scoring.do_scoring(pattern)
 
 		secret_filter = SecretFilter()
-		secret_filter.filter_secrets(RESTRICTIONS.HIGH, pattern)
+		secret_filter.filter_secrets(RESTRICTIONS.MEDIUM, pattern)
 		
 		# self.output_results(pattern)
 		# print(f"--- {pattern.name} ---")
