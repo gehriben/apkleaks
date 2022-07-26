@@ -17,7 +17,7 @@ class API():
         load_dotenv()
         self.config.read('config.cfg')
         self.base_url = self.config['FirmwareDroid']['api_url']
-        self.cookie = os.getenv('FIRMWAREDROID_COOKIE')
+        self.cookie = {'access_token_cookie': os.getenv('FIRMWAREDROID_COOKIE') }
         self.apk_path = '..' + self.config['AdvancedAPKLeaks']['mountpoint'] + self.config['AdvancedAPKLeaks']['apk_folder']
 
     def get_all_apks(self):

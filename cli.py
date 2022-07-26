@@ -3,6 +3,7 @@ import logging
 import click
 
 from apk_scanner.scan import Scan
+from apk_scanner.api import API
 
 @click.group()
 def apk_scanner_cli():
@@ -35,7 +36,8 @@ def idle():
     
 @apk_scanner_cli.command()
 def do_nothing():
-    pass
+    api = API()
+    api.get_apk("610a7caf29c38f9f4190adeb")
 
 cli = click.CommandCollection(sources=[apk_scanner_cli])
 
