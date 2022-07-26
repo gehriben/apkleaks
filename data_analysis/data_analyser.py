@@ -11,37 +11,20 @@ class DataAnalyser():
         self._apkleaks_analyser = ApkleaksAnalyser()
         self._db_manager = MongoDB()
 
-    def start_analysis(self):
+    def start_advanced_apkleask_analysis(self):
         self._apkleaks_analyser.extract_secrets()
-        # names = self._firmwaredroid_analyser.get_apk_names()
-        # firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_apkleaks_information_with_appnames()
-        # apkleaks_apks = self._apkleaks_analyser.get_apk_names()
-        
-        #firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_top_most_apk_results()
-
-
-        # self.compare_and_process_apks(apkleaks_apks, firmwaredroid_apkleaks_data)
-        # self.process_top_apks(firmwaredroid_apkleaks_data)
-        # self.evaluate_fp_in_ip_addresses(self._db_manager.db_name_firmwaredroid)
-
-    def compare_and_process_apks(self, apkleaks_apks, firmwaredroid_apkleaks_data):
-        stored_entries_counter = 0
-        not_collected_apks = 0
-        for apkleaks_apk in apkleaks_apks:
-            if apkleaks_apk+'.apk' in firmwaredroid_apkleaks_data:
-                results = firmwaredroid_apkleaks_data[apkleaks_apk+'.apk']
-                self._apkleaks_analyser.store_appnames(self._apkleaks_analyser.db_firmwaredroid_data, results["app_id"], apkleaks_apk, results['secret_size'])
-                stored_entries_counter += self.store_secrets_of_apks(results["results"], apkleaks_apk, self._apkleaks_analyser.db_firmwaredroid_data)
-            else:
-                not_collected_apks += 1
-
-        print(f"Stored {stored_entries_counter} secrets from FirmwareDroid! {not_collected_apks} apks couldn't get collected!")
     
+    def start_firmwaredroid_analysis(self):
+        firmwaredroid_apkleaks_data = self._firmwaredroid_analyser.get_top_most_apk_results()
+
+        self.process_top_apks(firmwaredroid_apkleaks_data)
+        self.evaluate_fp_in_ip_addresses(self._db_manager.db_firmwaredroid)
+
     def process_top_apks(self, firmwaredroid_apkleaks_data):
         stored_entries_counter = 0
         for appname, results in firmwaredroid_apkleaks_data.items():
-            self._apkleaks_analyser.store_appnames(self._apkleaks_analyser.firmwaredroid_secrets_top_apks, results["app_id"], appname, results['secret_size'])
-            stored_entries_counter += self.store_secrets_of_apks(results["results"], appname, self._apkleaks_analyser.firmwaredroid_secrets_top_apks)
+            self._db_manager.store_appnames_of_extracted_secrets(self._db_manager.db_firmwaredroid, results["app_id"], appname, results['secret_size'])
+            stored_entries_counter += self.store_secrets_of_apks(results["results"], appname, self._db_manager.db_firmwaredroid)
 
         print(f"Stored {stored_entries_counter} secrets from FirmwareDroid with the top most APKs!")
 
@@ -56,7 +39,7 @@ class DataAnalyser():
                             'falsePositive': False
                         }
 
-                    self._apkleaks_analyser.store_data(db_name, result["name"], json_object)
+                    self._db_manager.store_extracted_secrets(db_name, result["name"], json_object)
                     stored_entries_counter += 1
         
         return stored_entries_counter

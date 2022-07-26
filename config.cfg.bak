@@ -1,0 +1,31 @@
+[paths]
+logs = /log
+
+[db]
+db_name = advanced_apk_leaks
+db_extracted_secrets = advanced_apk_leaks_extracted_secrets
+db_data_analysis = data_analysis
+collection_apk_leaks_results = apkleaks_results
+username = root
+password = do_not_commit_secrets
+host = mongodb
+port = 27017
+
+[AdvancedAPKLeaks]:
+restriction_mode = High
+mountpoint = /apks 
+apk_folder = /apk_files
+results_folder = /results
+source_folder = /sources
+plot_folder = /plots
+verbose = true
+wipe_resources = true
+include_firmware_droid_data = false
+
+[FirmwareDroid]
+api_url = https://firmwaredroid.cloudlab.zhaw.ch/api
+db_extracted_secrets = firmwaredroid_extracted_secrets
+
+[logging]
+debug = true
+silent = false

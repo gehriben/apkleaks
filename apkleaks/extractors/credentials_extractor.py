@@ -6,8 +6,6 @@ from tqdm import tqdm
 from apkleaks.utils import util
 from apkleaks.heuristics.keyword_searcher import KeywordSearcher
 from apkleaks.heuristics.string_detection import StringDetection
-from apkleaks.score import Score
-from apkleaks.score import Scoremargin
 
 ENTROPY_MARGIN = 4.0
 ENTROPY_FRACTURE_MARGIN = 0.4

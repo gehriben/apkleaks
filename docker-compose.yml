@@ -7,7 +7,7 @@ services:
     ports:
       - 127.0.0.1:${MONGODB_PORT:-27017}:27017
     env_file:
-      - mongo.env
+      - .env
     volumes:
       - ${MONGODB_DATA_DIR:-/mnt/data/mongodb}:/data/db
     restart: always
@@ -23,8 +23,6 @@ services:
         USER_NAME: ${USER_NAME}
         GROUP_ID: ${GROUP_ID}
         GROUP_NAME: ${GROUP_NAME}
-        REPO_USER: ${REPO_USER}
-        REPO_PASSWORD: ${REPO_PASSWORD}
     image: apkscanner-base
     container_name: apkscanner-cli
     volumes:

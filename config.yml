@@ -1,6 +1,3 @@
-paths:
-  logs: /log
-
 db:
   name: apk_scanner
   username: root

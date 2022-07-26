@@ -1,8 +1,10 @@
 import argparse
 import os
 import json
+from re import S
 import shutil
 import traceback
+import configparser
 
 from pymongo.errors import DocumentTooLarge
 
@@ -10,27 +12,48 @@ from apkleaks.apkleaks import APKLeaks
 from apk_scanner.file_reader import File_Reader
 from apk_scanner.api import API
 from apk_scanner.db_manager import MongoDB
-from apkleaks.extractors.credentials_extractor import CredentialsExtractor
-
-APK_PATH = '../apks/apk_files'
-APKLEAKS_RESULTS_PATH = '../apks/results'
-APKLEAKS_VERBOSE_PATH = '../apks/sources'
+from data_analysis.data_analyser import DataAnalyser
+from data_analysis.data_visualisation import DataVisualisation
 
 MAX_ITERATIONS = 0
-VERBOSE = True
-WIPE_SOURCES = True
 
 class Scan():
     def __init__(self):
         self._file_reader = File_Reader()
         self._api = API()
         self._db_manager = MongoDB()
+        self.data_analyser = DataAnalyser()
+        self.data_visualiser = DataVisualisation()
+        self.config = configparser.ConfigParser()
+        
+        self.config.read('config.cfg')
+        self.apk_path = '..' + self.config['AdvancedAPKLeaks']['mountpoint'] + self.config['AdvancedAPKLeaks']['apk_folder']
+        self.results_path = '..' + self.config['AdvancedAPKLeaks']['mountpoint'] + self.config['AdvancedAPKLeaks']['results_folder']
+        self.sources_path = '..' + self.config['AdvancedAPKLeaks']['mountpoint'] + self.config['AdvancedAPKLeaks']['source_folder']
+        self.verbose = self.config['AdvancedAPKLeaks']['verbose']
+        self.wipe_mode = self.config['AdvancedAPKLeaks']['wipe_resources']
+        self.include_firmware_droid_data = self.config['AdvancedAPKLeaks']['include_firmware_droid_data']
+
+    def initalization(self):
+        if not os.path.exists(self.apk_path):
+            os.mkdir(self.apk_path)
+        if not os.path.exists(self.results_path):
+            os.mkdir(self.results_path)
+        if not os.path.exists(self.sources_path):
+            os.mkdir(self.sources_path)
 
     def start_scan(self):
-        # Get all apks and stores them
-        self._api.get_all_apks()
+        if not os.path.exists(self.apk_path) or not os.path.exists(self.results_path) or not os.path.exists(self.sources_path):
+            print("Error! You need to initialise the application first!")
+            return
 
-        apk_file_list = self._file_reader.read_files(APK_PATH)
+        # Get all apks and stores them
+        if self.include_firmware_droid_data == 'true':
+            print(f"Including FirmwareDroid Data activated. Collecting Secrets from FirmwareDroid DB!")
+            self.data_analyser.start_firmwaredroid_analysis()
+            self._api.get_all_apks()
+
+        apk_file_list = self._file_reader.read_files(self.apk_path)
         print("Scanner found %s APKs. Start scanning!" % (len(apk_file_list)))
         count_files = 0
         for filename in apk_file_list:
@@ -71,18 +94,23 @@ class Scan():
                     print(traceback.format_exc())
             else:
                 print("App with name %s already in database. Skipping!" % (filename.replace('.apk', '')))
+        
+        print(" ==> Run data analysis")
+        self.data_analyser.start_advanced_apkleask_analysis()
+        print(" ==> Visualise data")
+        self.data_visualiser.start_visualistaion()
 
     def path_builder(self, filename):
-        apk_path = APK_PATH + '/' + filename
+        apk_path = self.apk_path + '/' + filename
         apkname = filename.replace('.apk', '')
-        result_path = APKLEAKS_RESULTS_PATH + '/' + apkname + '/' + apkname + '.txt'
-        verbose_path = APKLEAKS_VERBOSE_PATH + '/' + apkname
+        result_path = self.results_path + '/' + apkname + '/' + apkname + '.txt'
+        verbose_path = self.sources_path + '/' + apkname
         
-        if os.path.exists(APKLEAKS_RESULTS_PATH + '/' + apkname) == False:
-            os.mkdir(APKLEAKS_RESULTS_PATH + '/' + apkname)
-        if os.path.exists(verbose_path) == False and VERBOSE == True:
+        if os.path.exists(self.results_path + '/' + apkname) == False:
+            os.mkdir(self.results_path + '/' + apkname)
+        if os.path.exists(verbose_path) == False and self.verbose  == 'true':
             os.mkdir(verbose_path)
-        elif os.path.exists(verbose_path) and WIPE_SOURCES and VERBOSE:
+        elif os.path.exists(verbose_path) and self.wipe_mode  == 'true' and self.verbose == 'true':
             print(f"Source folder for {apkname} already exists! Wipe mode is activated so folder will be deleted an recreated.")
             shutil.rmtree(verbose_path)
             os.mkdir(verbose_path)
@@ -98,10 +126,10 @@ class Scan():
     
     def build_arguments(self, filepath, outputpath, verbosepath):
         file = filepath
-        output = outputpath if VERBOSE else None
+        output = outputpath if self.verbose == 'true' else None
         pattern = None
         disargs = None
-        verbose = verbosepath if VERBOSE else None
+        verbose = verbosepath if self.verbose == 'true' else None
         json = False
         pattern_matcher = True
         key_extractor = True

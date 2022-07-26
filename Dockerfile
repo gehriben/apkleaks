@@ -1,18 +1,12 @@
 FROM python:3.9-buster as base
 
 FROM base as builder
-ARG REPO_USER
-ARG REPO_PASSWORD
 
 RUN mkdir /install
 WORKDIR /install
 COPY ./requirements.txt  /
-RUN echo "machine isg-python-repository.cloudlab.zhaw.ch login ${REPO_USER} password ${REPO_PASSWORD}" > /root/.netrc && \
-    chown root /root/.netrc && \
-    chmod 0600 /root/.netrc && \
-    pip install --upgrade pip setuptools && \
-    pip install --target /install -r /requirements.txt && \
-    rm /root/.netrc
+RUN pip install --upgrade pip setuptools && \
+    pip install --target /install -r /requirements.txt
 
 FROM base
 
@@ -44,4 +38,5 @@ USER ${ubuntu}
 
 WORKDIR /app
 ENTRYPOINT ["python3", "cli.py"]
-CMD ["start-apk-scan"]
+CMD ["start-scan"]
+

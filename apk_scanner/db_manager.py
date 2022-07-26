@@ -1,21 +1,42 @@
-from pymongo import MongoClient
+import os
+import configparser
 
-COLLECTION_NAME = "apkleaks_results_v8"
+from pymongo import MongoClient
+from dotenv import load_dotenv
 
 class MongoDB(object):
     def __init__(self):
-        self.client = MongoClient("mongodb", 27017, username="root", password="rootpassword")
-        self.db_apk_scanner = self.client["apk_scanner"]
-        self.db_name_advanced_apkleaks = self.client["apk_scanner_secrets"]
-        self.db_name_firmwaredroid = self.client["firmwaredroid_secrets_top_apks"]
-        self.db_name_data_analisation = self.client["data_analysis"]
+        self.config = configparser.ConfigParser()
+
+        load_dotenv()
+        self.config.read('config.cfg')
+        
+        self.client = MongoClient(self.config['db']['host'], int(self.config['db']['port']), username=os.getenv('MONGO_INITDB_ROOT_USERNAME'), password=os.getenv('MONGO_INITDB_ROOT_PASSWORD'))
+        self.db_advanced_apkleaks = self.client[self.config['db']['db_name']]
+        self.db_advanced_apkleaks_extracted_secrets = self.client[self.config['db']['db_extracted_secrets']]
+        self.db_firmwaredroid = self.client[self.config['FirmwareDroid']['db_extracted_secrets']]
+        self.db_data_analysis = self.client[self.config['db']['db_data_analysis']]
+
+        self.collection_advanced_apkleaks = self.config['db']['collection_advanced_apkleaks']
 
     def store_scan(self, scans):
-        collection = self.db_apk_scanner[COLLECTION_NAME]
+        collection = self.db_advanced_apkleaks[self.collection_advanced_apkleaks]
         collection.insert_one(scans)
 
+    def get_apks(self):
+        collection = self.db_advanced_apkleaks[self.collection_advanced_apkleaks]
+        results = collection.find({}, { "_id": 0, "appname": 1})
+
+        return results 
+
+    def get_advanced_apkleaks_results(self):
+        collection = self.db_advanced_apkleaks[self.collection_advanced_apkleaks]
+        result = collection.find({})
+
+        return result
+
     def get_scan_by_appname(self, appname):
-        collection = self.db_apk_scanner[COLLECTION_NAME]
+        collection = self.db_advanced_apkleaks[self.collection_advanced_apkleaks]
         result = collection.find_one({"appname": appname})
 
         return result
@@ -51,24 +72,36 @@ class MongoDB(object):
 
         return result
 
+    def store_extracted_secrets(self, db, patternname, secrets):
+        collection = db[patternname]
+        collection.insert_one(secrets) 
+
+    def store_appnames_of_extracted_secrets(self, db, app_id, appname, secret_size):
+        collection = db['_Applist']
+        collection.insert_one({"app_id":app_id, "appname": appname, "secret_size":secret_size}) 
+
     def store_remaining_false_positives(self, remaining_false_positives):
-        collection = self.db_name_data_analisation["remaining_false_positves"]
+        collection = self.db_data_analysis["remaining_false_positves"]
         collection.insert_many(remaining_false_positives)
     
     def store_removed_false_positives(self, removed_false_positives):
-        collection = self.db_name_data_analisation["removed_false_positives"]
+        collection = self.db_data_analysis["removed_false_positives"]
         collection.insert_many(removed_false_positives)
 
     def store_remaining_true_positives(self, remaining_true_positives):
-        collection = self.db_name_data_analisation["remaining_true_positves"]
+        collection = self.db_data_analysis["remaining_true_positves"]
         collection.insert_many(remaining_true_positives)
     
     def store_removed_true_positives(self, removed_true_positives):
-        collection = self.db_name_data_analisation["removed_true_positives"]
+        collection = self.db_data_analysis["removed_true_positives"]
         collection.insert_many(removed_true_positives)
     
+    def store_newly_added_secrets(self, newly_added_secrets):
+        collection = self.db_data_analysis["newly_added_secrets"]
+        collection.insert_many(newly_added_secrets)
+    
     def get_all_app_informations(self):
-        collection = self.db_name_firmwaredroid["_Applist"]
+        collection = self.db_firmwaredroid["_Applist"]
         result = collection.find({}, { 'app_id': 1, 'appname': 1, '_id':0})
 
         return result

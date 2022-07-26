@@ -1,7 +1,7 @@
 from apkleaks.patterns.pattern import Pattern
 
-NAME = "RSA_Private_Key"
-REGEXES = ["-----BEGIN RSA PRIVATE KEY-----"]
+NAME = "PGP_private_key_block"
+REGEXES = ["-----BEGIN PGP PRIVATE KEY BLOCK-----"]
 
 
 class PgpPrivateKeyBlockPattern(Pattern):
