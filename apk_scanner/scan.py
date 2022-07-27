@@ -56,7 +56,7 @@ class Scan():
         apk_file_list = self._file_reader.read_files(self.apk_path)
         print("Scanner found %s APKs. Start scanning!" % (len(apk_file_list)))
         count_files = 0
-        for filename in apk_file_list:
+        """for filename in apk_file_list:
             if not self._db_manager.get_scan_by_appname(filename.replace('.apk', '')):
                 try:
                     print("*** SCANNING "+filename+" ***")
@@ -93,7 +93,7 @@ class Scan():
                     print("Error in apk scan! Skipping this apk!")
                     print(traceback.format_exc())
             else:
-                print("App with name %s already in database. Skipping!" % (filename.replace('.apk', '')))
+                print("App with name %s already in database. Skipping!" % (filename.replace('.apk', '')))"""
         
         print(" ==> Run data analysis")
         self.data_analyser.start_advanced_apkleask_analysis()
