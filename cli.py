@@ -36,8 +36,7 @@ def idle():
     
 @apk_scanner_cli.command()
 def do_nothing():
-    api = API()
-    api.get_apk("610a7caf29c38f9f4190adeb")
+    pass
 
 cli = click.CommandCollection(sources=[apk_scanner_cli])
 
