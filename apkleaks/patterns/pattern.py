@@ -66,7 +66,7 @@ class Pattern():
     def get_heuristic_amount(self):
         count_heuristic = 0
         for heuristic, is_activated in self.heuristics_status.items():
-            if is_activated and self.scoring_types[heuristic] is not (AdditionalScore):
+            if is_activated and not isinstance(self.scoring_types[heuristic], AdditionalScore):
                 count_heuristic += 1
         
         return count_heuristic

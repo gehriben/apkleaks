@@ -99,7 +99,7 @@ class FileFiltering():
 
     def is_directory_excluded(self, folderpath):
         for excluded_directory in EXCLUDED_DIRECTORIES:
-            if folderpath.endswith(excluded_directory):
+            if folderpath.endswith('sources/'+excluded_directory):
                 return True
         
         return False

@@ -22,8 +22,8 @@ from apkleaks.decompiler import Decompiler
 from apkleaks.filter.file_filtering import FileFiltering
 from apkleaks.heuristics.heuristics import Heuristics
 from apkleaks.scoring.scoring import Scoring
-from apkleaks.scoring.secret_fiter import SecretFilter
-from apkleaks.scoring.secret_fiter import RESTRICTIONS
+from apkleaks.scoring.secret_filter import SecretFilter
+from apkleaks.scoring.secret_filter import RESTRICTIONS
 from apkleaks.extractors.key_extractor import KeyExtractor
 from apkleaks.extractors.credentials_extractor import CredentialsExtractor
 from apkleaks.patterns.custom_pattern import CustomPattern

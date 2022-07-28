@@ -31,7 +31,7 @@ class SecretFilter():
             return False
     
     def __calculate_score(self, score, C, pattern):
-        if C != -1:
+        if C != RESTRICTIONS.NONE:
             return float(score[0]) + float(C/pattern.get_heuristic_amount()) * float(score[1])
         else:
             return float(score[0]) + float(score[1])
