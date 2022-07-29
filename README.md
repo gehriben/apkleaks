@@ -1,8 +1,6 @@
 # AdvancedAPKLeaks
 AdvancedAPKLeaks to scan Android APKs and search for secrets.
 
-# Usage
-
 # Deployment
 ## Basic Steps
 There are some basic requirements for successful deployment of the service:
