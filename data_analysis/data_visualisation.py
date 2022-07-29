@@ -45,7 +45,7 @@ class DataVisualisation():
 
             plt.figure(figsize=(12, 5))
             bar = plt.barh(secret_names, secret_count)
-            plt.title("Secret distribution over pattern types in old apkleaks")
+            plt.title("Secret distribution over pattern types in original APKLeaks")
             plt.bar_label(bar, padding=10)
             plt.savefig(self.plot_path+'/secret_distribution_old_apkleaks.png', height=0.5, bbox_inches='tight')
 
@@ -61,7 +61,7 @@ class DataVisualisation():
 
         plt.figure(figsize=(12, 5))
         bar = plt.barh(secret_names, secret_count)
-        plt.title("Secret distribution over pattern types in advanced apkleaks")
+        plt.title("Secret distribution over pattern types in AdvancedAPKLeaks")
         plt.bar_label(bar, padding=10)
         plt.savefig(self.plot_path+'/secret_distribution_new_apkleaks.png', width=0.3, bbox_inches='tight')
 
@@ -79,7 +79,7 @@ class DataVisualisation():
 
         plt.figure(figsize=(12, 5))
         bar = plt.barh(self.false_positive_names, self.false_positive_count)
-        plt.title("False Positive distribution over pattern types in old apkleaks")
+        plt.title("False positive distribution over pattern types in original APKLeaks")
         plt.bar_label(bar, padding=10)
         plt.savefig(self.plot_path+'/false_positive_distribution_old_apkleaks.png', width=0.3, bbox_inches='tight')
 
@@ -96,7 +96,7 @@ class DataVisualisation():
 
         plt.figure(figsize=(12, 5))
         bar = plt.barh(self.false_positive_names, self.false_positive_count)
-        plt.title("False Positive distribution over pattern types in AdvancedAPKLeaks")
+        plt.title("False positive distribution over pattern types in AdvancedAPKLeaks")
         plt.bar_label(bar, padding=10)
         plt.savefig(self.plot_path+'/false_positive_distribution_new_apkleaks.png', width=0.3, bbox_inches='tight')
 
@@ -132,7 +132,7 @@ class DataVisualisation():
 
         plt.figure(figsize=(12, 5))
         bar = plt.barh(removed_false_positive_secrets_names, removed_false_positive_secrets_content)
-        plt.title("Removed False Positive pattern distribution")
+        plt.title("Removed false positive pattern distribution")
         plt.bar_label(bar, padding=10)
         plt.savefig(self.plot_path+'/removed_false_positive.png', width=0.3, bbox_inches='tight')
 
@@ -145,7 +145,7 @@ class DataVisualisation():
 
         plt.figure(figsize=(12, 5))
         bar = plt.barh(remaining_false_positive_secrets_names, remaining_false_positive_secrets_content)
-        plt.title("Remaining False Positive pattern distribution")
+        plt.title("Remaining false positive pattern distribution")
         plt.bar_label(bar, padding=10)
         plt.savefig(self.plot_path+'/remaining_false_positive.png', width=0.3, bbox_inches='tight')
     
@@ -160,7 +160,7 @@ class DataVisualisation():
 
         plt.figure(figsize=(12, 5))
         bar = plt.barh(removed_true_positive_secrets_names, removed_true_positive_secrets_content)
-        plt.title("Removed True Positive pattern distribution")
+        plt.title("Removed true positive pattern distribution")
         plt.bar_label(bar, padding=10)
         plt.savefig(self.plot_path+'/removed_true_positive.png', width=0.3, bbox_inches='tight')
 
@@ -173,7 +173,7 @@ class DataVisualisation():
 
         plt.figure(figsize=(12, 5))
         bar = plt.barh(remaining_true_positive_secrets_names, remaining_true_positive_secrets_content)
-        plt.title("Remaining True Positive pattern distribution")
+        plt.title("Remaining true positive pattern distribution")
         plt.bar_label(bar, padding=10)
         plt.savefig(self.plot_path+'/remaining_true_positive.png', width=0.3, bbox_inches='tight')
     
@@ -188,7 +188,7 @@ class DataVisualisation():
 
         plt.figure(figsize=(12, 5))
         bar = plt.barh(newly_added_secrets_names, newly_added_secrets_content)
-        plt.title("Newly added Secrets")
+        plt.title("Newly added secrets")
         plt.bar_label(bar, padding=10)
         plt.savefig(self.plot_path+'/newly_added_secrets.png', width=0.3, bbox_inches='tight')
 

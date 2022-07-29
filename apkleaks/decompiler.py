@@ -76,7 +76,6 @@ class Decompiler():
             sys.exit()
 
     def __decompile_apk(self):
-        # Dekompiliert die apk mit jadx und speichert das File im outputdir Ordner
         if not os.listdir(self.outputdir):
             util.writeln("** Decompiling APK...", col.OKBLUE)
             args = [self.jadx, self.file, "-d", self.outputdir]
@@ -87,7 +86,6 @@ class Decompiler():
                 pass
             comm = "%s" % (" ".join(quote(arg) for arg in args))
             comm = comm.replace("\'","\"")
-            # comm = jadx [APK Name].apk -d outputdir
             os.system(comm)
         else:
             util.writeln("** Source file folder already exists. Skipping decompilation...", col.WARNING)

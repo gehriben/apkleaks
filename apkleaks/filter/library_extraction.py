@@ -28,5 +28,4 @@ class LibraryExtraction():
                 pass
             comm = "%s" % (" ".join(arg for arg in args))
             comm = comm.replace("\'","\"")
-            # comm = jadx [APK Name].apk -d /tmp/apkleaks-[APK Name]
             os.system(comm)

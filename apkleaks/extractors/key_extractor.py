@@ -35,7 +35,6 @@ class KeyExtractor():
         if found_secret_keys:
             key_extractor_pattern.results['possible_secrets'] = found_secret_keys
 
-    # Prüft ob ein Regex Pattern mit dem Source Code match und so ein Secret offenbart
     def file_reader(self, path, total_files) -> list():
         found_matches = []
         progressbar = tqdm(total=total_files)
@@ -71,7 +70,6 @@ class KeyExtractor():
                 elif base64_key_length%4==1:
                     base64_key_length+=3
                 
-                # sequenz_entropy_dict = self.sliding_window(base64_key_length, line)
                 sequenz_entropy_dict = self._string_detection.detect_string(line, sequence_length=base64_key_length)
                 
                 if sequenz_entropy_dict:

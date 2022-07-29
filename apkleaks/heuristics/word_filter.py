@@ -17,7 +17,6 @@ class WordFilter():
             return words_in_secret
 
     def is_word_in_secret(self, secret):
-        #accepts string secret and returns list of words that exist in the secret
         words_in_secret = list(filter(lambda x: x.lower() in secret.lower(), self.list_of_words))
         return words_in_secret
 

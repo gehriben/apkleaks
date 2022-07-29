@@ -126,8 +126,6 @@ class APKLeaks:
 		if self.args_pattern_matcher:
 			scan_threads = list()
 			for pattern in self.patterns:
-				# print(pattern)
-				# Prüft ob das Pattern eine Liste ist oder nicht und verarbeitet es entsprechend
 				try:
 					thread = threading.Thread(target = self.extract, args = (pattern,))
 					thread.start()
@@ -180,10 +178,6 @@ class APKLeaks:
 
 		secret_filter = SecretFilter()
 		secret_filter.filter_secrets(RESTRICTIONS.MEDIUM, pattern)
-		
-		# self.output_results(pattern)
-		# print(f"--- {pattern.name} ---")
-		# print(pattern.results)
 
 	def extract_secret_key(self, _key_extractor_pattern):
 		self._key_extractor.extract_secret_key(_key_extractor_pattern, self.tempdir, self.total_files)
@@ -194,8 +188,6 @@ class APKLeaks:
 
 		secret_filter = SecretFilter()
 		secret_filter.filter_secrets(RESTRICTIONS.HIGH, _key_extractor_pattern)
-		
-		# self.output_results(_key_extractor_pattern)
 
 	def extract_credentials(self, _credential_extractor_pattern):
 		self._credential_extractor.search_credentials(_credential_extractor_pattern, self.tempdir, self.total_files)
@@ -206,8 +198,6 @@ class APKLeaks:
 
 		secret_filter = SecretFilter()
 		secret_filter.filter_secrets(RESTRICTIONS.HIGH, _credential_extractor_pattern)
-		
-		# self.output_results(_credential_extractor_pattern)
 
 	def output_results(self, pattern):
 		if 'valid_secrets' in pattern.results:
@@ -221,12 +211,6 @@ class APKLeaks:
 			self.fileout.write("%s" % ("\n" if self.json is False else ""))
 		if 'possible_secrets' in pattern.results:
 			self.out_json["results"].append(pattern.json())	
-		
-		"""print("")
-		stdout = ("[%s]" % ('JSON_Printout'))
-		util.writeln("\n" + stdout, col.OKGREEN)
-		print(stdout)
-		print(self.out_json)"""
 	
 	def is_pattern_valid(self, filename, filepath):
 		for excluded_pattern_filename in EXCLUDED_PATTERN_FILENAMES:
@@ -236,9 +220,6 @@ class APKLeaks:
 		for excluded_pattern_filepaths in EXCLUDED_PATTERN_FILEPATHS:
 			if filepath.endswith(excluded_pattern_filepaths):
 				return False
-		
-		"""if filename != 'password_in_url_pattern.py' and filename != 'aws_s3_bucket_pattern.py':
-			return False"""
 
 		return True
 
@@ -249,11 +230,3 @@ class APKLeaks:
 		self.fileout.write("%s" % (json.dumps(self.out_json, indent=4) if self.json else ""))
 		self.fileout.close()
 		print("%s\n** Results saved into '%s%s%s%s'%s." % (col.HEADER, col.ENDC, col.OKGREEN, self.output, col.HEADER, col.ENDC))
-		"""if self.scanned and self.scanned_for_aes and self.scanned_for_credentials:
-			self.fileout.write("%s" % (json.dumps(self.out_json, indent=4) if self.json else ""))
-			self.fileout.close()
-			print("%s\n** Results saved into '%s%s%s%s'%s." % (col.HEADER, col.ENDC, col.OKGREEN, self.output, col.HEADER, col.ENDC))
-		else:
-			self.fileout.close()
-			os.remove(self.output)
-			util.writeln("\n** Done with nothing. ¯\\_(ツ)_/¯", col.WARNING)"""

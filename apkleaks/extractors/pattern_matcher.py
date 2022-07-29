@@ -19,7 +19,6 @@ class PatternMatcher():
         if matches:
             pattern.results['possible_secrets'] = matches
 
-    # Prüft ob ein Regex Pattern mit dem Source Code match und so ein Secret offenbart
     def file_reader(self, pattern, path, total_files) -> list():
         found_matches = []
         progressbar = tqdm(total=total_files)
@@ -35,7 +34,6 @@ class PatternMatcher():
                             linenumber += 1
                     except Exception:
                         pass
-                        # print(traceback.format_exc())
                     
                 progressbar.update(1)
 
