@@ -48,10 +48,10 @@ class Scan():
             return
 
         # Get all apks and stores them
-        """if self.include_firmware_droid_data == 'true':
+        if self.include_firmware_droid_data == 'true':
             print(f"Including FirmwareDroid Data activated. Collecting Secrets from FirmwareDroid DB!")
             self.data_analyser.start_firmwaredroid_analysis()
-            # self._api.get_all_apks()"""
+            self._api.get_all_apks()
 
         apk_file_list = self._file_reader.read_files(self.apk_path)
         print("Scanner found %s APKs. Start scanning!" % (len(apk_file_list)))
