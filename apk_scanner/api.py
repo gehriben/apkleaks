@@ -5,8 +5,8 @@ from tqdm import tqdm
 
 from apk_scanner.db_manager import MongoDB
 
-BASE_URL = "https://firmwaredroid.cloudlab.zhaw.ch/api"
-COOKIE = {'access_token_cookie': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY1ODEyNjQ1MSwianRpIjoiZjQ0M2JlM2MtZmE5NS00MDNkLWE0Y2QtZjNmM2MzMzQxZjVkIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IntcInJvbGVfbGlzdFwiOiBbXCJ1c2VyXCJdLCBcImVtYWlsXCI6IFwiZ2VobkB6aGF3LmNoXCJ9IiwibmJmIjoxNjU4MTI2NDUxLCJleHAiOjE2NTg3MzEyNTF9.4bj6huXJ0g2z4lrW7uS2VCSzWTZETdBCWqFj6yrhBlU'}
+BASE_URL = ""
+COOKIE = {'access_token_cookie': ''}
 APK_PATH = '../apks/apk_files'
 
 class API():
