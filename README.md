@@ -58,9 +58,5 @@ The configuration of the application is managed by the `config.cfg` file. The fi
 
     [FirmwareDroid]
     api_url = <Base url to the FirmwareDroid API>
-<<<<<<< HEAD
-    db_extracted_secrets = <DB for the extracted data from the FirmwareDroid DB>
-=======
     db_extracted_secrets = <DB for the extracted data from the FirmwareDroid DB>
 
->>>>>>> e834e50ad8697cb51cc58cc00ab0a858b9325e4a
