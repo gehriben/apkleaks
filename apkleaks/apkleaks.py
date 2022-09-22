@@ -82,7 +82,6 @@ class APKLeaks:
 	def init_patterns(self):
 		patterns = list()
 
-		count = 0
 		for filepath, _, files in os.walk('apkleaks/patterns'):
 			for filename in files:
 				if self.is_pattern_valid(filename, filepath):
